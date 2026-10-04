@@ -1,0 +1,7 @@
+.DS_Store
+*.zip
+node_modules/
+.php-cs-fixer*
+.idea/
+.vscode/
+dist/

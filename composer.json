@@ -1,0 +1,15 @@
+{
+  "name": "websource/websourcesociallogin",
+  "description": "Websource Social Login : connexion et inscription en un clic avec Google, Facebook, X, LinkedIn, Microsoft, Apple et GitHub (OAuth 2.0 / OpenID Connect).",
+  "type": "prestashop-module",
+  "license": "AFL-3.0",
+  "authors": [{"name": "Websource"}],
+  "require": {"php": ">=7.3", "ext-json": "*", "ext-openssl": "*"},
+  "autoload": {"psr-4": {"Websource\\SocialLogin\\": "src/"}},
+  "config": {
+    "optimize-autoloader": true,
+    "platform-check": false,
+    "platform": {"php": "7.3.0"},
+    "autoloader-suffix": "Websourcesociallogin"
+  }
+}

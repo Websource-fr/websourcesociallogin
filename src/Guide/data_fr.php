@@ -1,0 +1,227 @@
+<?php
+
+/**
+ * @author    Websource
+ * @copyright Websource
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
+ */
+
+/**
+ * Guides pas à pas (français). Balises HTML autorisées : strong, em, code, br, ul, ol, li.
+ * Variables : {callback} (URL de rappel exacte, avec bouton copier), {origin}, {domain}, {scopes}.
+ */
+return [
+    'google' => [
+        'intro' => 'Google utilise OpenID Connect : le module valide la signature de l\'id_token et n\'accepte l\'e-mail que s\'il est vérifié par Google. Comptez environ 10 minutes. Aucun coût.',
+        'console' => ['Google Cloud Console', 'https://console.cloud.google.com/apis/credentials'],
+        'steps' => [
+            ['title' => 'Créer (ou choisir) un projet Google Cloud', 'path' => 'console.cloud.google.com > sélecteur de projet (en haut) > Nouveau projet',
+                'body' => 'Connectez-vous avec le compte Google de votre entreprise. Cliquez sur le sélecteur de projet, puis <strong>Nouveau projet</strong>. Donnez-lui le nom de votre boutique et validez.'],
+            ['title' => 'Configurer l\'écran de consentement OAuth', 'path' => 'Menu ☰ > API et services > Écran de consentement OAuth (ou « Google Auth Platform > Branding »)',
+                'body' => 'C\'est la fenêtre que vos clients voient en se connectant. Choisissez le type d\'utilisateur <strong>Externe</strong>.',
+                'fields' => [['Nom de l\'application', 'le nom de votre boutique'], ['E-mail d\'assistance utilisateur', 'une adresse que vous lisez'], ['Domaines autorisés', '{domain}'], ['Lien vers les règles de confidentialité', '{origin}/ (votre page « politique de confidentialité »)'], ['E-mail du développeur', 'votre e-mail']]],
+            ['title' => 'Déclarer les autorisations (scopes)', 'path' => 'Écran de consentement > Accès aux données (Scopes) > Ajouter ou supprimer des niveaux d\'accès',
+                'body' => 'Ajoutez uniquement les trois niveaux d\'accès « non sensibles » : <code>openid</code>, <code>.../auth/userinfo.email</code> et <code>.../auth/userinfo.profile</code>. Ils ne déclenchent pas de vérification approfondie par Google.'],
+            ['title' => 'Créer l\'ID client OAuth', 'path' => 'Menu ☰ > API et services > Identifiants > + Créer des identifiants > ID client OAuth',
+                'body' => 'Type d\'application : <strong>Application Web</strong>. Dans <strong>URI de redirection autorisés</strong>, collez exactement l\'adresse ci-dessous (https, sans espace, sans « / » ajouté).',
+                'fields' => [['Type d\'application', 'Application Web'], ['Nom', 'Connexion boutique'], ['Origines JavaScript autorisées', 'laisser vide (inutile)'], ['URI de redirection autorisés', '{callback}']]],
+            ['title' => 'Copier l\'ID client et le code secret dans le module', 'path' => 'Fenêtre « Client OAuth créé » > ID client + Code secret du client',
+                'body' => 'Copiez l\'<strong>ID client</strong> (se termine par <code>.apps.googleusercontent.com</code>) et le <strong>Code secret du client</strong>, collez-les dans les champs de ce module, activez Google puis enregistrez. Le secret n\'est affiché en clair nulle part ensuite.'],
+            ['title' => 'Passer en production', 'path' => 'Écran de consentement > État de publication > Publier l\'application',
+                'body' => 'Tant que l\'application est en <strong>Test</strong>, seuls les « utilisateurs tests » que vous listez (100 maximum) peuvent se connecter, et leur autorisation expire au bout de 7 jours. Cliquez sur <strong>Publier l\'application</strong> (statut « En production »). Avec uniquement les scopes non sensibles ci-dessus, aucune vérification par Google n\'est nécessaire.'],
+        ],
+        'scopes' => 'Scopes demandés : <code>{scopes}</code>. Le module reçoit : identifiant Google (sub), e-mail, état de vérification de l\'e-mail, prénom, nom. Rien d\'autre.',
+        'errors' => [
+            ['Erreur 400 : redirect_uri_mismatch', 'L\'URI de redirection saisie dans Google n\'est pas strictement identique à {callback}. Vérifiez https, le nom de domaine (avec ou sans www), l\'absence de « / » final en trop. La modification peut mettre quelques minutes à être prise en compte.'],
+            ['Erreur 403 : access_denied / « L\'application n\'a pas terminé le processus de validation »', 'L\'application est encore en mode Test et votre compte n\'est pas dans les utilisateurs tests : ajoutez-le, ou publiez l\'application (étape 6).'],
+            ['Erreur 401 : invalid_client', 'L\'ID client ou le code secret est incorrect ou a été régénéré. Recollez-les depuis la page Identifiants.'],
+            ['« Cette application n\'est pas validée par Google »', 'Normal si vous demandez des scopes sensibles. Limitez-vous aux trois scopes de l\'étape 3.'],
+            ['Erreur 400 : invalid_request (« Les règles de Google interdisent… »)', 'Une URI de redirection n\'est pas en https, ou le domaine n\'est pas déclaré dans l\'écran de consentement.'],
+        ],
+        'links' => [['Console des identifiants Google', 'https://console.cloud.google.com/apis/credentials'], ['Documentation OpenID Connect de Google', 'https://developers.google.com/identity/openid-connect/openid-connect']],
+    ],
+
+    'facebook' => [
+        'intro' => 'Facebook Login (Meta). Les permissions <code>public_profile</code> et <code>email</code> sont accordées par défaut, sans passer par la revue d\'application. Comptez environ 15 minutes. Gratuit.',
+        'console' => ['Meta for Developers', 'https://developers.facebook.com/apps/'],
+        'steps' => [
+            ['title' => 'Créer une app Meta', 'path' => 'developers.facebook.com > Mes apps > Créer une app',
+                'body' => 'Connectez-vous avec un compte Facebook (devenu « compte développeur »). Cliquez sur <strong>Créer une app</strong>, saisissez le nom de votre boutique et votre e-mail. Pour le cas d\'usage, choisissez <strong>Authentifier et demander des données aux utilisateurs avec Facebook Login</strong>. Type d\'app : « Consommateur » ou « Autre », selon l\'assistant.'],
+            ['title' => 'Renseigner les informations de base', 'path' => 'Paramètres de l\'app > Général',
+                'body' => 'Renseignez ce qui est obligatoire pour passer en mode Live, puis copiez l\'<strong>ID de l\'app</strong> et la <strong>Clé secrète</strong> (bouton « Afficher », votre mot de passe Facebook est demandé).',
+                'fields' => [['Domaines de l\'app', '{domain}'], ['URL de la politique de confidentialité', 'votre page de politique de confidentialité (obligatoire)'], ['URL des conditions d\'utilisation', 'votre page de CGV (recommandé)'], ['Icône de l\'app (1024×1024)', 'votre logo'], ['Catégorie', 'Achats / Commerce']]],
+            ['title' => 'Configurer Facebook Login', 'path' => 'Tableau de bord > Cas d\'usage > Facebook Login > Personnaliser > Paramètres (ou Produits > Facebook Login > Paramètres)',
+                'body' => 'Activez <strong>Connexion OAuth client</strong> et <strong>Connexion OAuth Web</strong>, <strong>Forcer HTTPS</strong> et le <strong>mode strict</strong> pour les URI de redirection, puis collez l\'adresse ci-dessous.',
+                'fields' => [['URI de redirection OAuth valides', '{callback}']]],
+            ['title' => 'Vérifier les permissions', 'path' => 'Cas d\'usage > Facebook Login > Permissions et fonctionnalités',
+                'body' => 'Assurez-vous que <code>public_profile</code> et <code>email</code> sont sur « Accès standard » (ils le sont par défaut). Aucune revue d\'application n\'est nécessaire pour ces deux-là.'],
+            ['title' => 'Coller l\'ID et la clé secrète dans le module', 'path' => 'Ce module > Facebook',
+                'body' => 'ID de l\'app = « Client ID », Clé secrète = « Client Secret ». Activez Facebook et enregistrez.'],
+            ['title' => 'Passer l\'app en mode Live', 'path' => 'Bandeau en haut du tableau de bord > « Mode de l\'app » : Développement → Live',
+                'body' => 'En mode <strong>Développement</strong>, seuls les administrateurs, développeurs et testeurs de l\'app peuvent se connecter. Basculez sur <strong>Live</strong> une fois la politique de confidentialité et la catégorie renseignées. La « vérification de l\'entreprise » n\'est demandée que pour des accès avancés, pas pour public_profile + email.'],
+        ],
+        'scopes' => 'Permissions demandées : <code>{scopes}</code>. Le module reçoit : identifiant Facebook (id), prénom, nom et e-mail s\'il existe. Facebook ne renvoie que des e-mails confirmés.',
+        'errors' => [
+            ['« URL bloquée : la redirection a échoué » / redirect_uri is not whitelisted', 'L\'URI saisie dans « URI de redirection OAuth valides » diffère de {callback}. Copiez-la avec le bouton, activez le mode strict et réessayez.'],
+            ['« Fonctionnalité indisponible » / « L\'app n\'est pas active »', 'L\'app est en mode Développement et votre compte n\'a pas de rôle dessus. Ajoutez-le dans Rôles de l\'app, ou passez en Live (étape 6).'],
+            ['« Can\'t load URL : le domaine de cette URL n\'est pas inclus dans les domaines de l\'app »', 'Ajoutez {domain} dans Paramètres > Général > Domaines de l\'app.'],
+            ['Aucun e-mail reçu', 'Le client n\'a pas d\'e-mail confirmé sur Facebook, ou il a décoché l\'autorisation. Le module lui demande alors de saisir son e-mail, qu\'il confirme par un lien.'],
+            ['Invalid client_secret / Error validating client secret', 'La clé secrète a été régénérée ou mal copiée : recollez-la.'],
+        ],
+        'links' => [['Mes apps Meta', 'https://developers.facebook.com/apps/'], ['Documentation Facebook Login', 'https://developers.facebook.com/docs/facebook-login/web']],
+    ],
+
+    'x' => [
+        'intro' => 'X (anciennement Twitter) : OAuth 2.0 avec PKCE, application de type « client confidentiel ». L\'e-mail n\'est fourni que si votre application y est autorisée (scope <code>users.email</code>) ; sinon le module le demandera au client. Les offres et quotas de l\'API X évoluent : vérifiez-les sur le portail.',
+        'console' => ['X Developer Portal', 'https://developer.x.com/en/portal/dashboard'],
+        'steps' => [
+            ['title' => 'Ouvrir un compte développeur X', 'path' => 'developer.x.com > Developer Portal',
+                'body' => 'Connectez-vous avec le compte X de votre entreprise et acceptez le contrat développeur (décrivez l\'usage : « connexion des clients de ma boutique avec leur compte X »).'],
+            ['title' => 'Créer un Project et une App', 'path' => 'Developer Portal > Projects & Apps > + Add Project (puis Add App)',
+                'body' => 'L\'application doit obligatoirement être rattachée à un <strong>Project</strong> (sinon l\'API répond « client-not-enrolled »).'],
+            ['title' => 'Activer l\'authentification utilisateur (OAuth 2.0)', 'path' => 'Votre App > Settings > User authentication settings > Set up',
+                'body' => 'C\'est ici que se règle la connexion.',
+                'fields' => [['App permissions', 'Read (lecture seule suffit)'], ['Request email from users', 'à cocher si disponible (nécessite les deux URL ci-dessous)'], ['Type of App', 'Web App, Automated App or Bot (= Confidential client)'], ['Callback URI / Redirect URL', '{callback}'], ['Website URL', '{origin}'], ['Terms of service / Privacy policy', 'URL de vos CGV et de votre politique de confidentialité']]],
+            ['title' => 'Récupérer le Client ID et le Client Secret', 'path' => 'Votre App > Keys and tokens > OAuth 2.0 Client ID and Client Secret',
+                'body' => 'Cliquez sur <strong>Generate</strong> (ou Regenerate). Le <strong>Client Secret n\'est affiché qu\'une seule fois</strong> : copiez-le immédiatement. N\'utilisez pas « API Key / API Secret » ni le « Bearer Token » : ce sont d\'autres mécanismes (OAuth 1.0a).'],
+            ['title' => 'Choisir les scopes', 'path' => 'Ce module > X > Scopes',
+                'body' => 'Par défaut : <code>users.read tweet.read users.email</code>. Si X répond « invalid_scope », supprimez <code>users.email</code> : la connexion fonctionnera, et le module demandera l\'e-mail au client.'],
+            ['title' => 'Coller les identifiants dans le module', 'path' => 'Ce module > X',
+                'body' => 'Client ID, Client Secret, activez X puis enregistrez.'],
+            ['title' => 'Mise en production', 'path' => 'Developer Portal > votre App > Settings',
+                'body' => 'X n\'a pas de mode « développement / live » : l\'application est utilisable dès sa création. Vérifiez cependant le niveau d\'accès (Free, Basic…) et ses quotas de requêtes : une boutique à fort trafic peut dépasser les limites d\'un niveau gratuit.'],
+        ],
+        'scopes' => 'Scopes demandés : <code>{scopes}</code>. Le module reçoit : identifiant X (id), nom affiché et, si autorisé, l\'e-mail confirmé (confirmed_email).',
+        'errors' => [
+            ['« Something went wrong. You weren\'t able to give access to the App »', 'L\'URL de rappel enregistrée dans X diffère de {callback} (https, domaine, « / » final). Corrigez-la dans User authentication settings.'],
+            ['invalid_scope', 'Le scope <code>users.email</code> n\'est pas autorisé pour votre application : retirez-le dans les scopes du module.'],
+            ['client-not-enrolled / 403', 'L\'App n\'est pas dans un Project, ou votre niveau d\'accès n\'inclut pas l\'endpoint /2/users/me.'],
+            ['429 Too Many Requests', 'Quota de l\'offre X dépassé : patientez ou changez d\'offre.'],
+            ['Aucun e-mail reçu', 'Cas normal si l\'e-mail n\'est pas autorisé ou n\'est pas confirmé sur X : le client saisit son e-mail et le confirme par un lien.'],
+        ],
+        'links' => [['X Developer Portal', 'https://developer.x.com/en/portal/dashboard'], ['Documentation OAuth 2.0 (X)', 'https://docs.x.com/resources/fundamentals/authentication/oauth-2-0/authorization-code']],
+    ],
+
+    'linkedin' => [
+        'intro' => 'LinkedIn via le produit « Sign In with LinkedIn using OpenID Connect » (OpenID Connect standard). Une Page LinkedIn d\'entreprise est obligatoire pour créer l\'application. Comptez environ 10 minutes. Gratuit.',
+        'console' => ['LinkedIn Developer Portal', 'https://www.linkedin.com/developers/apps'],
+        'steps' => [
+            ['title' => 'Créer l\'application', 'path' => 'linkedin.com/developers/apps > Create app',
+                'body' => 'Renseignez les champs ; la Page LinkedIn doit appartenir à votre entreprise (vous devez en être administrateur).',
+                'fields' => [['App name', 'le nom de votre boutique'], ['LinkedIn Page', 'la Page LinkedIn de votre entreprise'], ['Privacy policy URL', 'votre politique de confidentialité'], ['App logo', 'votre logo (minimum 100×100 px)']]],
+            ['title' => 'Ajouter le produit « Sign In with LinkedIn using OpenID Connect »', 'path' => 'Votre app > onglet Products',
+                'body' => 'Cliquez sur <strong>Request access</strong> en face de « Sign In with LinkedIn using OpenID Connect » (accès accordé immédiatement). Sans ce produit, LinkedIn répond « unauthorized_scope_error ».'],
+            ['title' => 'Déclarer l\'URL de redirection', 'path' => 'Votre app > onglet Auth > OAuth 2.0 settings > Authorized redirect URLs for your app',
+                'body' => 'Cliquez sur le crayon, <strong>Add redirect URL</strong>, collez l\'adresse ci-dessous puis Update.',
+                'fields' => [['Authorized redirect URLs', '{callback}']]],
+            ['title' => 'Copier le Client ID et le Client Secret', 'path' => 'Votre app > onglet Auth > Application credentials',
+                'body' => 'Copiez le <strong>Client ID</strong> et le <strong>Primary Client Secret</strong>, collez-les dans ce module, activez LinkedIn puis enregistrez.'],
+            ['title' => 'Vérifier l\'application', 'path' => 'Votre app > onglet Settings > Verify',
+                'body' => 'Cliquez sur <strong>Verify</strong> : LinkedIn génère un lien que l\'administrateur de la Page doit approuver. Une application non vérifiée peut afficher un avertissement aux clients. Il n\'existe pas de mode « live » séparé : l\'app fonctionne dès l\'ajout du produit.'],
+        ],
+        'scopes' => 'Scopes demandés : <code>{scopes}</code> (openid, profile, email). Le module reçoit : identifiant LinkedIn (sub), prénom, nom, e-mail et son état de vérification.',
+        'errors' => [
+            ['redirect_uri doesn\'t match / Bummer, something went wrong', 'L\'URL enregistrée dans l\'onglet Auth diffère de {callback}. Elle doit être identique au caractère près.'],
+            ['unauthorized_scope_error / scope not authorized', 'Le produit « Sign In with LinkedIn using OpenID Connect » n\'a pas été ajouté (onglet Products) : ajoutez-le.'],
+            ['invalid_client_id / invalid_client_secret', 'Recopiez le Client ID et le Primary Client Secret depuis l\'onglet Auth (pas l\'identifiant de la Page).'],
+            ['Aucun e-mail (ou e-mail non vérifié)', 'Le membre n\'a pas d\'e-mail confirmé : le module lui demande son e-mail et le confirme par un lien.'],
+        ],
+        'links' => [['Mes applications LinkedIn', 'https://www.linkedin.com/developers/apps'], ['Documentation Sign In with LinkedIn (OpenID Connect)', 'https://learn.microsoft.com/linkedin/consumer/integrations/self-serve/sign-in-with-linkedin-v2']],
+    ],
+
+    'microsoft' => [
+        'intro' => 'Microsoft Entra ID (comptes professionnels/scolaires, et comptes personnels Outlook, Hotmail, Xbox). Important : Microsoft ne garantit pas que l\'e-mail d\'un compte professionnel appartient à son titulaire ; le module ne le considère donc comme vérifié que si Microsoft l\'atteste (revendication <code>xms_edov</code>) et demande sinon une confirmation par e-mail.',
+        'console' => ['Microsoft Entra admin center', 'https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade/quickStartType~/null/sourceType/Microsoft_AAD_IAM'],
+        'steps' => [
+            ['title' => 'Inscrire une application', 'path' => 'entra.microsoft.com > Identité > Applications > Inscriptions d\'applications > + Nouvelle inscription',
+                'body' => 'Il faut un compte Azure/Entra (un compte Microsoft gratuit suffit pour créer le locataire).',
+                'fields' => [['Nom', 'le nom de votre boutique'], ['Types de comptes pris en charge', 'Comptes dans un annuaire d\'organisation et comptes Microsoft personnels (multilocataire et personnels)'], ['URI de redirection - plateforme', 'Web'], ['URI de redirection', '{callback}']]],
+            ['title' => 'Noter l\'ID d\'application (client)', 'path' => 'Votre inscription > Vue d\'ensemble',
+                'body' => 'Copiez l\'<strong>ID d\'application (client)</strong> : c\'est le Client ID. Le champ « Locataire » du module reste sur <code>common</code> (comptes professionnels et personnels). Utilisez <code>consumers</code> pour les seuls comptes personnels, <code>organizations</code> pour les seuls comptes professionnels, ou l\'ID de répertoire (locataire) pour un seul annuaire.'],
+            ['title' => 'Créer un secret client', 'path' => 'Certificats et secrets > Secrets client > + Nouveau secret client',
+                'body' => 'Choisissez une durée (24 mois maximum), puis copiez immédiatement la colonne <strong>Valeur</strong> (pas l\'« ID de secret »). Elle ne sera plus affichée. <strong>Notez la date d\'expiration</strong> : à l\'échéance, la connexion cessera de fonctionner tant que vous n\'aurez pas créé un nouveau secret.'],
+            ['title' => 'Vérifier les autorisations', 'path' => 'Autorisations de l\'API',
+                'body' => 'Microsoft Graph, autorisations déléguées : <code>openid</code>, <code>profile</code>, <code>email</code> (et User.Read par défaut). Aucun consentement administrateur n\'est requis pour ces droits.'],
+            ['title' => 'Ajouter les revendications facultatives (recommandé)', 'path' => 'Configuration des jetons > + Ajouter une revendication facultative > ID',
+                'body' => 'Ajoutez <code>email</code>, <code>given_name</code>, <code>family_name</code> et, si proposée, <code>xms_edov</code> (domaine de l\'e-mail vérifié). Acceptez d\'activer l\'autorisation Graph « email » si Entra le propose.'],
+            ['title' => 'Marque et mise en production', 'path' => 'Image de marque et propriétés',
+                'body' => 'Renseignez le logo, les URL des conditions d\'utilisation et de la politique de confidentialité, et si possible la <strong>vérification de l\'éditeur</strong> (supprime la mention « non vérifié » à l\'écran de consentement). Il n\'y a pas de mode « test » à quitter : l\'application est utilisable dès son inscription. Dans certaines organisations, un administrateur doit autoriser l\'application pour ses utilisateurs.'],
+        ],
+        'scopes' => 'Scopes demandés : <code>{scopes}</code>. Le module reçoit : identifiant (locataire + objet), nom, e-mail (préféré : revendication email).',
+        'errors' => [
+            ['AADSTS50011 : l\'URL de réponse ne correspond pas', 'L\'URI de redirection de l\'inscription (plateforme « Web ») diffère de {callback}. Corrigez-la dans Authentification.'],
+            ['AADSTS7000215 : secret client invalide', 'Vous avez copié l\'« ID de secret » au lieu de la <strong>Valeur</strong>, ou le secret a expiré : créez-en un nouveau.'],
+            ['AADSTS700016 / AADSTS50020 : application introuvable dans le locataire', 'Le type de comptes de l\'inscription ou le champ « Locataire » du module ne correspondent pas (ex. compte personnel avec locataire « organizations »).'],
+            ['AADSTS65001 : consentement requis', 'Un administrateur de l\'organisation du client doit autoriser l\'application, ou le client doit accepter la demande.'],
+            ['Un e-mail est redemandé au client', 'Normal : Microsoft n\'atteste pas la propriété de l\'e-mail (protection contre l\'attaque nOAuth). Ajouter la revendication <code>xms_edov</code> (étape 5) évite cette étape lorsque Microsoft la fournit.'],
+        ],
+        'links' => [['Inscriptions d\'applications Entra', 'https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade/quickStartType~/null/sourceType/Microsoft_AAD_IAM'], ['Documentation du flux de code d\'autorisation', 'https://learn.microsoft.com/entra/identity-platform/v2-oauth2-auth-code-flow']],
+    ],
+
+    'apple' => [
+        'intro' => 'Sign in with Apple : le plus technique des réseaux. Il exige le programme Apple Developer (99 USD/an), un Services ID, une clé privée <code>.p8</code> et une adresse en HTTPS. Le module génère lui-même le « client secret » (JWT signé ES256) à chaque connexion à partir de votre clé : vous n\'avez pas à le renouveler tous les 6 mois. Apple peut masquer l\'e-mail du client (adresse relais @privaterelay.appleid.com).',
+        'console' => ['Apple Developer', 'https://developer.apple.com/account/resources/identifiers/list/serviceId'],
+        'steps' => [
+            ['title' => 'Rejoindre l\'Apple Developer Program', 'path' => 'developer.apple.com/programs > Enroll',
+                'body' => 'L\'adhésion est payante (99 USD/an) et peut prendre 1 à 2 jours pour une entreprise (numéro D-U-N-S).'],
+            ['title' => 'Créer un App ID avec « Sign in with Apple »', 'path' => 'Certificates, Identifiers & Profiles > Identifiers > + > App IDs > App',
+                'body' => 'Description et Bundle ID (ex. <code>fr.votreboutique.web</code>). Dans Capabilities, cochez <strong>Sign in with Apple</strong>, puis Continue > Register. Cet App ID sert de « Primary App ID ».'],
+            ['title' => 'Créer un Services ID (= Client ID)', 'path' => 'Identifiers > + > Services IDs',
+                'body' => 'Description et Identifier (ex. <code>fr.votreboutique.signin</code>) : cet <strong>Identifier est le Client ID</strong>. Cochez <strong>Sign in with Apple</strong> puis cliquez sur <strong>Configure</strong>.',
+                'fields' => [['Primary App ID', 'l\'App ID créé à l\'étape 2'], ['Domains and Subdomains', '{domain} (sans https://)'], ['Return URLs', '{callback}']]],
+            ['title' => 'Créer une clé privée', 'path' => 'Keys > + > Key Name > Sign in with Apple > Configure',
+                'body' => 'Choisissez le Primary App ID, validez, puis <strong>téléchargez le fichier <code>AuthKey_XXXXXXXXXX.p8</code></strong> : Apple ne le propose qu\'une seule fois, gardez-le en lieu sûr. Notez le <strong>Key ID</strong> (10 caractères).'],
+            ['title' => 'Relever le Team ID', 'path' => 'developer.apple.com/account > Membership details > Team ID',
+                'body' => 'Identifiant de 10 caractères.'],
+            ['title' => 'Remplir le module', 'path' => 'Ce module > Apple',
+                'body' => 'Services ID, Team ID, Key ID, puis collez <strong>tout le contenu</strong> du fichier .p8 (de <code>-----BEGIN PRIVATE KEY-----</code> à <code>-----END PRIVATE KEY-----</code>) dans le champ « Clé privée ». Elle est chiffrée en base et jamais renvoyée au navigateur. Activez Apple et enregistrez.'],
+            ['title' => 'Mise en production et e-mails relais', 'path' => 'Certificates, Identifiers & Profiles > More > Configure Sign in with Apple for Email Communication',
+                'body' => 'Apple n\'a pas de mode « test » : tout fonctionne dès la configuration. Si un client choisit « Masquer mon e-mail », vos e-mails transactionnels passent par un relais Apple : enregistrez là votre domaine d\'envoi et vos adresses d\'expédition (SPF et DKIM valides) sinon ils ne seront pas livrés. Apple peut aussi demander de vérifier le domaine en déposant un fichier dans <code>/.well-known/</code>.'],
+        ],
+        'scopes' => 'Scopes demandés : <code>{scopes}</code>. Le module reçoit : identifiant Apple (sub), e-mail (réel ou relais), état de vérification, et le nom uniquement lors de la toute première autorisation.',
+        'errors' => [
+            ['invalid_client', 'Le Services ID, le Team ID, le Key ID ou la clé .p8 ne correspondent pas, ou la clé n\'est pas associée au bon Primary App ID. Recréez la clé si besoin.'],
+            ['invalid_request : Invalid web redirect url / redirect_uri mismatch', 'Les « Return URLs » du Services ID diffèrent de {callback}, ou le domaine n\'est pas listé dans « Domains and Subdomains ».'],
+            ['Retour sur le site « session expirée » après Apple', 'Apple répond en POST depuis un autre domaine : le site doit être en HTTPS (cookie SameSite=None; Secure). Vérifiez le certificat et que le cookie de liaison n\'est pas bloqué.'],
+            ['Le prénom et le nom sont vides', 'Apple n\'envoie le nom qu\'à la première autorisation. Le client peut révoquer l\'accès sur appleid.apple.com > Connexion et sécurité > Se connecter avec Apple, puis recommencer.'],
+            ['E-mails qui ne partent pas vers @privaterelay.appleid.com', 'Enregistrez votre domaine d\'envoi dans « Configure Sign in with Apple for Email Communication » (étape 7).'],
+        ],
+        'links' => [['Services IDs Apple Developer', 'https://developer.apple.com/account/resources/identifiers/list/serviceId'], ['Documentation Sign in with Apple (web)', 'https://developer.apple.com/documentation/signinwithapple/configuring-your-webpage-for-sign-in-with-apple']],
+    ],
+
+    'github' => [
+        'intro' => 'GitHub (OAuth App). Idéal pour une clientèle de développeurs. Le module n\'utilise que les e-mails marqués « vérifiés » par GitHub. Comptez 5 minutes. Gratuit.',
+        'console' => ['GitHub Developer settings', 'https://github.com/settings/developers'],
+        'steps' => [
+            ['title' => 'Ouvrir les réglages développeur', 'path' => 'github.com > votre avatar > Settings > Developer settings > OAuth Apps > New OAuth App',
+                'body' => 'Pour une application appartenant à une organisation : Organization > Settings > Developer settings > OAuth Apps.'],
+            ['title' => 'Remplir le formulaire', 'path' => 'Register a new OAuth application',
+                'body' => 'GitHub n\'accepte <strong>qu\'une seule</strong> URL de rappel par OAuth App : créez une application par domaine de boutique.',
+                'fields' => [['Application name', 'le nom de votre boutique'], ['Homepage URL', '{origin}'], ['Authorization callback URL', '{callback}'], ['Enable Device Flow', 'laisser décoché']]],
+            ['title' => 'Récupérer le Client ID et générer le secret', 'path' => 'Après « Register application » > Client ID, puis « Generate a new client secret »',
+                'body' => 'Copiez le <strong>Client ID</strong> puis cliquez sur <strong>Generate a new client secret</strong> : il n\'est affiché qu\'une seule fois, copiez-le immédiatement dans ce module.'],
+            ['title' => 'Scopes', 'path' => 'Ce module > GitHub > Scopes',
+                'body' => 'Par défaut <code>read:user user:email</code> : <code>user:email</code> permet de lire les e-mails du compte, dont le principal vérifié.'],
+            ['title' => 'Mise en production', 'path' => 'Application > Advanced / logo',
+                'body' => 'Les OAuth Apps n\'ont ni revue ni mode test : elles sont utilisables immédiatement par tous les comptes GitHub. Ajoutez un logo (Upload new logo). Si l\'organisation d\'un client restreint l\'accès aux applications tierces, il verra « Request » : c\'est à l\'administrateur de son organisation d\'approuver.'],
+        ],
+        'scopes' => 'Scopes demandés : <code>{scopes}</code>. Le module reçoit : identifiant GitHub (id), nom, e-mail principal vérifié.',
+        'errors' => [
+            ['redirect_uri_mismatch', 'L\'URL de rappel de l\'OAuth App diffère de {callback} (une seule URL possible par application, et son chemin doit commencer par celui enregistré).'],
+            ['incorrect_client_credentials', 'Client ID ou secret erroné : régénérez un secret.'],
+            ['bad_verification_code', 'Le code a déjà été utilisé ou a expiré (10 minutes) : recommencez la connexion.'],
+            ['Aucun e-mail reçu', 'Le compte n\'a aucune adresse vérifiée (ou le scope user:email a été retiré) : le client saisit son e-mail et le confirme par un lien.'],
+        ],
+        'links' => [['OAuth Apps GitHub', 'https://github.com/settings/developers'], ['Documentation GitHub OAuth', 'https://docs.github.com/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps']],
+    ],
+
+    '_common' => [
+        'title' => 'Problèmes fréquents (tous réseaux)',
+        'errors' => [
+            ['Aucun bouton n\'apparaît', 'Un réseau n\'est visible que s\'il est <strong>activé ET complet</strong> (tous les champs obligatoires renseignés) et que l\'emplacement est coché dans « Où afficher les boutons ». Les réseaux incomplets restent invisibles pour vos clients.'],
+            ['« Session expirée » après le retour du réseau', 'Le cookie de liaison a été bloqué (navigateur en navigation privée stricte, domaine différent entre www et sans www) ou la demande a duré plus de 10 minutes. Réessayez ; utilisez toujours la même adresse (l\'URL de rappel ci-dessus est celle de la boutique).'],
+            ['Le réseau refuse une URL « http:// »', 'Passez la boutique en HTTPS (Paramètres de la boutique > Trafic & SEO > Activer SSL sur toute la boutique). L\'URL de rappel est affichée en https.'],
+            ['Boutique multilingue ou plusieurs domaines', 'L\'URL de rappel est la même pour toutes les langues d\'un domaine (elle utilise la langue par défaut). Avec plusieurs domaines/boutiques, enregistrez l\'URL de chaque boutique chez le réseau (affichée dans chaque boutique).'],
+        ],
+    ],
+];

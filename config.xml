@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+  <name>websourcesociallogin</name>
+  <displayName><![CDATA[Websource Social Login]]></displayName>
+  <version><![CDATA[1.0.0]]></version>
+  <description><![CDATA[Connexion et inscription en un clic avec Google, Facebook, X, LinkedIn, Microsoft, Apple et GitHub, avec guides de configuration pas à pas.]]></description>
+  <author><![CDATA[Websource]]></author>
+  <tab><![CDATA[front_office_features]]></tab>
+  <is_configurable>1</is_configurable>
+  <need_instance>0</need_instance>
+  <limited_countries></limited_countries>
+</module>

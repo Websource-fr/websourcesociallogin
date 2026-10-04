@@ -1,0 +1,6 @@
+Hello,
+
+Confirm your e-mail address on {shop_name} to finish signing in with your social account:
+{link}
+
+This link is valid for one hour and only works in the browser where you started. If you did not request this, ignore this message: nothing will happen.

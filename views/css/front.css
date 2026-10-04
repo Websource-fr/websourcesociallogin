@@ -1,0 +1,144 @@
+/* Websource Social Login : boutons « Continuer avec … ». Adapté au thème par variables CSS (avec repli). */
+.wssl {
+  --wssl-gap: .625rem;
+  margin: 1rem 0;
+  font-family: inherit;
+  color: var(--color-ink, #1f2933);
+  box-sizing: border-box;
+}
+.wssl *, .wssl *::before, .wssl *::after { box-sizing: border-box; }
+
+.wssl__list { display: flex; flex-direction: column; gap: var(--wssl-gap); }
+
+.wssl-btn {
+  --b-bg: #fff;
+  --b-fg: var(--color-ink, #1f2933);
+  --b-bc: var(--color-line, #d0d5dd);
+  --b-ic: currentColor;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0 1.25rem;
+  font: inherit;
+  font-size: .9375rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none !important;
+  cursor: pointer;
+  color: var(--wssl-fg, var(--b-fg));
+  background: var(--wssl-bg, var(--b-bg));
+  border: var(--wssl-border-w, 1px) solid var(--wssl-bc, var(--b-bc));
+  border-radius: var(--wssl-radius, var(--radius-xl, .75rem));
+  transition: box-shadow .15s ease, transform .15s ease, border-color .15s ease, filter .15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.wssl-btn:hover, .wssl-btn:focus-visible {
+  color: var(--wssl-fg, var(--b-fg));
+  box-shadow: 0 2px 10px rgba(16, 24, 40, .14);
+  transform: translateY(-1px);
+}
+.wssl-btn:focus-visible { outline: 3px solid var(--color-brand-500, #2563eb); outline-offset: 2px; }
+.wssl-btn:active { transform: none; box-shadow: none; filter: brightness(.95); }
+
+.wssl-btn__logo { display: inline-flex; flex: 0 0 auto; color: var(--b-ic); }
+.wssl-btn__logo svg { display: block; width: 1.25rem; height: 1.25rem; }
+.wssl-btn__label { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wssl-btn__badge {
+  position: absolute; right: .75rem; top: 50%; transform: translateY(-50%);
+  padding: .1rem .5rem; font-size: .6875rem; font-weight: 600; border-radius: 999px;
+  background: rgba(16, 24, 40, .08); color: inherit; white-space: nowrap;
+}
+.wssl-btn__spinner { display: none; }
+
+/* --- Style « contour » : fond blanc, bordure du thème, logo en couleur --- */
+.wssl--outline .wssl-btn--facebook { --b-ic: #1877f2; }
+.wssl--outline .wssl-btn--linkedin { --b-ic: #0a66c2; }
+.wssl--outline .wssl-btn--x, .wssl--outline .wssl-btn--apple, .wssl--outline .wssl-btn--github { --b-ic: #000; }
+.wssl--outline .wssl-btn:hover { border-color: var(--wssl-bc, var(--color-brand-500, #98a2b3)); }
+
+/* --- Style « plein couleur du réseau » (chartes de marque) --- */
+.wssl--brand .wssl-btn--google { --b-bg: #fff; --b-fg: #1f1f1f; --b-bc: #747775; }
+.wssl--brand .wssl-btn--facebook { --b-bg: #1877f2; --b-fg: #fff; --b-bc: #1877f2; }
+.wssl--brand .wssl-btn--x { --b-bg: #000; --b-fg: #fff; --b-bc: #000; }
+.wssl--brand .wssl-btn--linkedin { --b-bg: #0a66c2; --b-fg: #fff; --b-bc: #0a66c2; }
+.wssl--brand .wssl-btn--microsoft { --b-bg: #2f2f2f; --b-fg: #fff; --b-bc: #2f2f2f; }
+.wssl--brand .wssl-btn--apple { --b-bg: #000; --b-fg: #fff; --b-bc: #000; }
+.wssl--brand .wssl-btn--github { --b-bg: #24292f; --b-fg: #fff; --b-bc: #24292f; }
+.wssl--brand .wssl-btn:hover { filter: brightness(1.12); }
+.wssl--brand .wssl-btn--google:hover { filter: none; background: #f8f9fa; }
+.wssl--brand .wssl-btn--google { border-width: max(var(--wssl-border-w, 1px), 1px); }
+.wssl--brand .wssl-btn__badge { background: rgba(255, 255, 255, .22); }
+.wssl--brand .wssl-btn--google .wssl-btn__badge { background: rgba(16, 24, 40, .08); }
+
+/* --- Style « neutre aux couleurs du thème » --- */
+.wssl--neutral .wssl-btn {
+  --b-bg: var(--color-brand-50, #f4f7f7);
+  --b-fg: var(--color-brand-800, #1f2933);
+  --b-bc: var(--color-brand-200, #d5dde0);
+}
+.wssl--neutral .wssl-btn:hover { --b-bg: var(--color-brand-100, #e8eeef); }
+
+/* --- Dispositions --- */
+.wssl--icononly .wssl__list, .wssl--grid .wssl__list { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; }
+.wssl--icononly .wssl-btn, .wssl--grid .wssl-btn { width: 2.75rem; min-width: 2.75rem; padding: 0; }
+.wssl--icononly .wssl-btn__label, .wssl--grid .wssl-btn__label {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.wssl--icononly .wssl-btn__badge, .wssl--grid .wssl-btn__badge { display: none; }
+.wssl--icononly .wssl-btn.is-last::after, .wssl--grid .wssl-btn.is-last::after {
+  content: ""; position: absolute; top: -4px; right: -4px; width: .65rem; height: .65rem; border-radius: 50%;
+  background: var(--color-accent-500, #16a34a); border: 2px solid #fff;
+}
+.wssl--compact { margin: .5rem 0 0; }
+.wssl--compact .wssl__list { justify-content: center; }
+.wssl--place-header { padding: .25rem .75rem .5rem; }
+
+/* --- Chargement --- */
+.wssl-btn.is-loading { pointer-events: none; cursor: progress; }
+.wssl-btn.is-loading .wssl-btn__spinner {
+  display: block; position: absolute; right: 1rem; top: 50%; width: 1.1rem; height: 1.1rem; margin-top: -.55rem;
+  border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: wssl-spin .7s linear infinite;
+}
+.wssl-btn.is-loading .wssl-btn__badge { display: none; }
+.wssl--icononly .wssl-btn.is-loading .wssl-btn__logo, .wssl--grid .wssl-btn.is-loading .wssl-btn__logo { opacity: 0; }
+.wssl--icononly .wssl-btn.is-loading .wssl-btn__spinner, .wssl--grid .wssl-btn.is-loading .wssl-btn__spinner { right: 50%; margin-right: -.55rem; }
+@keyframes wssl-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .wssl-btn { transition: none; }
+  .wssl-btn:hover, .wssl-btn:focus-visible { transform: none; }
+  .wssl-btn.is-loading .wssl-btn__spinner { animation-duration: 2s; }
+}
+
+/* --- Séparateur « ou » et mentions --- */
+.wssl__sep { display: flex; align-items: center; gap: 1rem; margin: 1.1rem 0; font-size: .8125rem; letter-spacing: .06em; text-transform: uppercase; color: var(--color-ink, #1f2933); opacity: .65; }
+.wssl__sep::before, .wssl__sep::after { content: ""; flex: 1; height: 1px; background: var(--color-line, #d9dee3); }
+.wssl__legal { margin: .75rem 0 0; font-size: .75rem; line-height: 1.45; opacity: .75; }
+
+/* --- Pages du module (Mon compte, confirmation) --- */
+.wssl-page { max-width: 40rem; }
+.wssl-page__form { margin: 1rem 0; }
+.wssl-page__note { font-size: .875rem; opacity: .75; }
+.wssl-rows { margin: 1rem 0; padding: 0; list-style: none; }
+.wssl-row { display: flex; align-items: center; gap: 1rem; padding: .875rem 1rem; margin-bottom: .5rem; background: var(--color-surface, #fff); border: 1px solid var(--color-line, #d9dee3); border-radius: var(--radius-xl, .75rem); }
+.wssl-row__logo svg { display: block; width: 1.5rem; height: 1.5rem; }
+.wssl-row__main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.wssl-row__main small { opacity: .7; overflow-wrap: anywhere; }
+.wssl-row__action { margin: 0; }
+
+@media (max-width: 480px) {
+  .wssl-row { flex-wrap: wrap; }
+  .wssl-row__action { width: 100%; }
+  .wssl-row__action .btn { width: 100%; }
+}
+
+/* Intégration dans le bloc « Mon compte » de l'en-tête (visiteur) */
+.wsab__social { display: inline-flex; align-items: center; }
+.wsab__social .wssl { margin: 0; padding: 0; }
+.wsab__social .wssl__list { flex-wrap: nowrap; gap: .25rem; }
+.wsab__social .wssl-btn { box-shadow: none; }
+.wsab-list .wsab__social, .wsab-float__panel .wsab__social { display: block; padding: .25rem .5rem .5rem; }
+@media (max-width: 767px) { .wsab--guest .wsab__social { display: none; } }

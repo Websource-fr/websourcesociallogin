@@ -1,0 +1,100 @@
+/* Websource Social Login : écran de configuration. */
+.wssl-bo { --wb-ink: #1f2933; --wb-muted: #667085; --wb-line: #e4e7ec; --wb-bg: #f8fafb; --wb-accent: #25b9d7; --wb-ok: #1a7f4b; --wb-warn: #b54708; --wb-err: #b42318; font-size: 14px; color: var(--wb-ink); max-width: 1100px; }
+.wssl-bo * { box-sizing: border-box; }
+.wssl-bo h1 { margin: 0; font-size: 1.6rem; }
+.wssl-bo h2 { margin: 0 0 .25rem; font-size: 1.25rem; }
+.wssl-bo h3 { margin: 0 0 .5rem; font-size: 1.05rem; }
+.wssl-bo h4 { margin: 1.25rem 0 .5rem; font-size: .95rem; }
+.wssl-bo__head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.wssl-bo__head p { margin: .25rem 0 0; color: var(--wb-muted); }
+.wssl-bo__shop { padding: .4rem .8rem; background: #fff; border: 1px solid var(--wb-line); border-radius: 999px; }
+.wssl-bo__nav { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1rem; position: sticky; top: 0; z-index: 5; padding: .5rem 0; background: #fff; }
+.wssl-bo__nav a { padding: .4rem .9rem; border-radius: 999px; background: var(--wb-bg); border: 1px solid var(--wb-line); color: var(--wb-ink); text-decoration: none; }
+.wssl-bo__nav a:hover, .wssl-bo__nav a:focus-visible { border-color: var(--wb-accent); outline: none; }
+.wssl-bo__notice { padding: .75rem 1rem; margin-bottom: .75rem; border-radius: 8px; border: 1px solid; }
+.wssl-bo__notice--ok { background: #ecfdf3; border-color: #abefc6; color: var(--wb-ok); }
+.wssl-bo__notice--warn { background: #fffaeb; border-color: #fedf89; color: var(--wb-warn); }
+.wssl-bo__notice--err { background: #fef3f2; border-color: #fecdca; color: var(--wb-err); }
+.wssl-bo__section { background: #fff; border: 1px solid var(--wb-line); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem; scroll-margin-top: 3.5rem; }
+.wssl-bo__lead, .wssl-bo__hint { color: var(--wb-muted); margin: .25rem 0 1rem; }
+.wssl-bo__hint { font-size: .85rem; margin: .25rem 0 .75rem; }
+.wssl-bo__cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+.wssl-bo__row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: .75rem; }
+.wssl-bo__field { display: flex; flex-direction: column; gap: .3rem; margin-bottom: .75rem; }
+.wssl-bo__field > label span, .wssl-bo__field > span, .wssl-bo__label { font-weight: 600; font-size: .85rem; }
+.wssl-bo__field small { color: var(--wb-muted); }
+.wssl-bo__lang { display: inline-block; width: 2.2rem; text-transform: uppercase; color: var(--wb-muted); }
+.wssl-bo input[type=text], .wssl-bo input[type=password], .wssl-bo input[type=number], .wssl-bo select, .wssl-bo textarea {
+  width: 100%; padding: .55rem .7rem; border: 1px solid #cfd4dc; border-radius: 8px; background: #fff; font: inherit; color: inherit;
+}
+.wssl-bo input:focus, .wssl-bo select:focus, .wssl-bo textarea:focus { outline: 2px solid var(--wb-accent); outline-offset: 1px; border-color: var(--wb-accent); }
+.wssl-bo input.is-invalid { border-color: var(--wb-err); background: #fef3f2; }
+.wssl-bo__check { display: flex; align-items: center; gap: .5rem; margin: .4rem 0; cursor: pointer; }
+.wssl-bo__check--small { font-size: .8rem; color: var(--wb-muted); }
+.wssl-bo__btn { display: inline-flex; align-items: center; gap: .4rem; padding: .55rem 1rem; border-radius: 8px; border: 1px solid #cfd4dc; background: #fff; color: var(--wb-ink); font: inherit; font-weight: 600; cursor: pointer; text-decoration: none; }
+.wssl-bo__btn:hover { border-color: var(--wb-accent); }
+.wssl-bo__btn--primary { background: var(--wb-accent); border-color: var(--wb-accent); color: #fff; }
+.wssl-bo__btn--primary:hover { filter: brightness(.95); }
+.wssl-bo__btn--link { background: var(--wb-bg); }
+.wssl-bo__savebar { position: sticky; bottom: 0; display: flex; align-items: center; gap: 1rem; padding: .85rem 1rem; margin: 0 0 1.25rem; background: #fff; border: 1px solid var(--wb-line); border-radius: 12px; box-shadow: 0 -4px 16px rgba(16, 24, 40, .06); }
+.wssl-bo__savebar span { color: var(--wb-muted); font-size: .85rem; }
+.wssl-bo__preview { padding: 1rem; background: var(--wb-bg); border: 1px dashed #cfd4dc; border-radius: 10px; max-width: 360px; }
+.wssl-bo__preview .wssl { margin: 0; }
+
+.wssl-card { border: 1px solid var(--wb-line); border-radius: 12px; margin-bottom: 1rem; overflow: hidden; background: #fff; }
+.wssl-card--active { border-color: #abefc6; }
+.wssl-card--incomplete { border-color: #fedf89; }
+.wssl-card__head { display: flex; align-items: center; gap: 1rem; padding: .9rem 1.1rem; background: var(--wb-bg); border-bottom: 1px solid var(--wb-line); }
+.wssl-card__logo { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 10px; background: #fff; border: 1px solid var(--wb-line); }
+.wssl-card__logo svg { width: 1.4rem; height: 1.4rem; }
+.wssl-card__logo--facebook { color: #1877f2; } .wssl-card__logo--linkedin { color: #0a66c2; }
+.wssl-card__title { flex: 1; display: flex; flex-wrap: wrap; align-items: center; gap: .25rem .75rem; }
+.wssl-card__title h3 { margin: 0; }
+.wssl-card__missing { color: var(--wb-warn); font-size: .8rem; }
+.wssl-badge { padding: .15rem .6rem; border-radius: 999px; font-size: .75rem; font-weight: 700; border: 1px solid; }
+.wssl-badge--active { background: #ecfdf3; color: var(--wb-ok); border-color: #abefc6; }
+.wssl-badge--configured { background: #eff8ff; color: #175cd3; border-color: #b2ddff; }
+.wssl-badge--incomplete { background: #fffaeb; color: var(--wb-warn); border-color: #fedf89; }
+.wssl-badge--empty { background: #f2f4f7; color: var(--wb-muted); border-color: var(--wb-line); }
+.wssl-switch { display: inline-flex; align-items: center; gap: .5rem; cursor: pointer; }
+.wssl-switch input { position: absolute; opacity: 0; }
+.wssl-switch__track { position: relative; width: 2.6rem; height: 1.45rem; border-radius: 999px; background: #cfd4dc; transition: background .15s; }
+.wssl-switch__track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 1.15rem; height: 1.15rem; border-radius: 50%; background: #fff; transition: transform .15s; box-shadow: 0 1px 2px rgba(0, 0, 0, .3); }
+.wssl-switch input:checked + .wssl-switch__track { background: var(--wb-ok); }
+.wssl-switch input:checked + .wssl-switch__track::after { transform: translateX(1.15rem); }
+.wssl-switch input:focus-visible + .wssl-switch__track { outline: 2px solid var(--wb-accent); outline-offset: 2px; }
+.wssl-card__body { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 1.25rem; padding: 1.1rem; }
+@media (max-width: 800px) { .wssl-card__body { grid-template-columns: 1fr; } }
+.wssl-card__side { display: flex; flex-direction: column; gap: .75rem; align-items: flex-start; }
+.wssl-card__meta { display: flex; gap: .5rem; flex-wrap: wrap; }
+.wssl-card__meta span { padding: .15rem .55rem; background: var(--wb-bg); border: 1px solid var(--wb-line); border-radius: 999px; font-size: .75rem; color: var(--wb-muted); }
+.wssl-bo__callback { width: 100%; }
+.wssl-bo__callback small { display: block; margin-top: .35rem; color: var(--wb-muted); }
+.wssl-bo__field--pos input { max-width: 6rem; }
+.wssl-copy { display: inline-flex; align-items: stretch; max-width: 100%; border: 1px solid #cfd4dc; border-radius: 8px; overflow: hidden; background: #f9fafb; vertical-align: middle; }
+.wssl-copy code { padding: .4rem .6rem; background: transparent; color: var(--wb-ink); overflow-wrap: anywhere; word-break: break-all; font-size: .8rem; }
+.wssl-copy__btn { border: 0; border-left: 1px solid #cfd4dc; background: #fff; padding: 0 .8rem; font: inherit; font-weight: 600; cursor: pointer; }
+.wssl-copy__btn:hover, .wssl-copy__btn.is-done { background: #ecfdf3; color: var(--wb-ok); }
+.wssl-test { list-style: none; margin: 0; padding: 0; width: 100%; }
+.wssl-test li { padding: .2rem 0; }
+.wssl-test .is-ok { color: var(--wb-ok); } .wssl-test .is-ko { color: var(--wb-err); }
+
+.wssl-guide { border-top: 1px solid var(--wb-line); }
+.wssl-guide > summary { padding: .85rem 1.1rem; cursor: pointer; font-weight: 700; background: #fcfcfd; list-style-position: inside; }
+.wssl-guide__body { padding: 0 1.1rem 1.1rem; }
+.wssl-guide__intro { padding: .75rem 1rem; background: #eff8ff; border-radius: 8px; border: 1px solid #b2ddff; }
+.wssl-steps { list-style: none; margin: 1rem 0; padding: 0; display: flex; flex-direction: column; gap: .5rem; }
+.wssl-step { border: 1px solid var(--wb-line); border-radius: 10px; background: #fff; }
+.wssl-step > summary { display: flex; align-items: center; gap: .75rem; padding: .65rem .85rem; cursor: pointer; font-weight: 600; list-style: none; }
+.wssl-step > summary::-webkit-details-marker { display: none; }
+.wssl-step__n { display: grid; place-items: center; flex: 0 0 1.8rem; height: 1.8rem; border-radius: 50%; background: var(--wb-accent); color: #fff; font-weight: 700; }
+.wssl-step[open] > summary { border-bottom: 1px solid var(--wb-line); background: var(--wb-bg); }
+.wssl-step__body { padding: .85rem 1rem 1rem 3.3rem; }
+.wssl-step__path { display: inline-block; margin: 0 0 .6rem; padding: .3rem .7rem; background: #101828; color: #e4e7ec; border-radius: 6px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .8rem; }
+.wssl-step__fields { width: 100%; border-collapse: collapse; margin-top: .5rem; }
+.wssl-step__fields th, .wssl-step__fields td { padding: .4rem .6rem; border: 1px solid var(--wb-line); text-align: left; vertical-align: top; }
+.wssl-step__fields th { width: 38%; background: var(--wb-bg); font-weight: 600; }
+.wssl-guide__errors dt { margin-top: .75rem; font-weight: 700; color: var(--wb-err); }
+.wssl-guide__errors dd { margin: .15rem 0 0; }
+.wssl-guide__links { margin-top: 1rem; }
+.wssl-bo code { padding: .1rem .35rem; background: #f2f4f7; border-radius: 4px; }

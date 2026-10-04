@@ -1,0 +1,747 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Websource Social Login : guide utilisateur</title><style>body{font-family:'Helvetica Neue',Arial,sans-serif;max-width:900px;margin:2rem auto;padding:0 1rem;color:#1f2937;line-height:1.55;font-size:15px}
+h1{color:#0f172a;border-bottom:3px solid #0ea5c6;padding-bottom:.3rem}h2{margin-top:2.2rem;border-bottom:1px solid #e5e7eb;padding-bottom:.2rem}h3{margin-top:1.8rem;color:#0e7490}h4{margin:1.1rem 0 .3rem}
+table{border-collapse:collapse;width:100%;margin:1rem 0;page-break-inside:avoid}td,th{border:1px solid #d1d5db;padding:.4rem .6rem;vertical-align:top;text-align:left}th{background:#f3f4f6}
+code{background:#f3f4f6;padding:1px 4px;border-radius:3px;font-size:.9em;word-break:break-all}pre{background:#0f172a;color:#e2e8f0;padding:1rem;border-radius:6px;overflow:auto;white-space:pre-wrap}pre code{background:none;color:inherit}
+img{max-width:100%;height:auto;border:1px solid #e5e7eb;border-radius:6px}a{color:#0e7490}h4,h3,h2{page-break-after:avoid}</style></head><body><h1 id="websource-social-login-guide-utilisateur">Websource Social Login : guide utilisateur</h1>
+<p>Version 1.0.0 : module PrestaShop gratuit, licence AFL-3.0, par <a href="https://websource.fr">Websource</a>.</p>
+<h2 id="1-presentation">1. Présentation</h2>
+<p><strong>Websource Social Login</strong> permet à vos clients de se connecter et de créer leur compte en un clic avec <strong>Google, Facebook, X (Twitter), LinkedIn, Microsoft, Apple et GitHub</strong>.</p>
+<ul>
+<li>Connexion <strong>et inscription automatique</strong> : le compte client est créé à partir du profil du réseau (identifiant, prénom, nom, e-mail).</li>
+<li>Aucune bibliothèque externe : cURL et PHP natif (OAuth 2.0 / OpenID Connect, PKCE, validation de l'id_token).</li>
+<li><strong>Anti-prise de compte</strong> : jamais de fusion automatique de comptes ; un e-mail non vérifié par le réseau est confirmé par lien.</li>
+<li>Un écran de configuration par réseau avec un <strong>guide pas à pas intégré</strong> (français et anglais), l'URL de rappel à copier et un test de configuration.</li>
+<li>Boutons personnalisables (3 styles, grille d'icônes, couleurs, formes) et placés où vous voulez : connexion, inscription, tunnel de commande, en-tête, liste de souhaits.</li>
+<li>RGPD : données minimales, export et suppression avec le compte client.</li>
+</ul>
+<p><img alt="Écran de configuration : réseaux et URL de rappel" src="../img/bo-fr-overview.png" /></p>
+<h3 id="comment-se-passe-une-connexion">Comment se passe une connexion</h3>
+<ol>
+<li>Le client clique sur « Continuer avec Google » (ou un autre réseau).</li>
+<li>Au retour du réseau :<ul>
+<li>compte social déjà lié : le client est <strong>connecté</strong> ;</li>
+<li>e-mail <strong>vérifié</strong> par le réseau et client existant : le client <strong>saisit son mot de passe</strong> pour lier les deux comptes (jamais de fusion automatique) ;</li>
+<li>e-mail vérifié et inconnu : le <strong>client est créé</strong> (mot de passe aléatoire fort, groupe par défaut, newsletter et offres partenaires non cochées) puis connecté ;</li>
+<li>e-mail <strong>non vérifié</strong> (ex. Microsoft) ou <strong>absent</strong> (ex. X) : le client saisit son e-mail et reçoit un <strong>lien de confirmation</strong> (valable 1 heure, à ouvrir dans le même navigateur).</li>
+</ul>
+</li>
+<li>Dans « Mon compte &gt; Connexions sociales », le client lie ou délie un réseau.</li>
+</ol>
+<h2 id="2-prerequis">2. Prérequis</h2>
+<table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Exigence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PrestaShop</td>
+<td>8.x (compatible à partir de 1.7.7)</td>
+</tr>
+<tr>
+<td>PHP</td>
+<td>7.3 ou supérieur (extensions <code>curl</code>, <code>json</code>, <code>openssl</code>)</td>
+</tr>
+<tr>
+<td>HTTPS</td>
+<td><strong>obligatoire</strong> : les réseaux refusent une URL de rappel en <code>http://</code> (Paramètres de la boutique &gt; Trafic et SEO &gt; Activer le SSL sur toutes les pages)</td>
+</tr>
+<tr>
+<td>Comptes développeur</td>
+<td>un compte gratuit chez chaque réseau que vous activez</td>
+</tr>
+<tr>
+<td>Pare-feu</td>
+<td>votre serveur doit pouvoir joindre les réseaux en HTTPS sortant (cURL)</td>
+</tr>
+</tbody>
+</table>
+<p>Vous n'avez pas besoin d'activer les sept réseaux : activez ceux que vos clients utilisent.</p>
+<h2 id="3-installation">3. Installation</h2>
+<h3 id="depuis-le-zip-recommande">Depuis le zip (recommandé)</h3>
+<ol>
+<li>Téléchargez <code>websourcesociallogin-1.0.0.zip</code> (page du module sur <a href="https://websource.fr">websource.fr</a> ou page « Releases » du dépôt GitHub). Vérifiez au besoin l'empreinte SHA-256 publiée avec le fichier : <code>sha256sum websourcesociallogin-1.0.0.zip</code>.</li>
+<li>Back-office &gt; <strong>Modules &gt; Gestionnaire de modules &gt; Installer un module</strong>, choisissez le zip.</li>
+<li>Cliquez sur <strong>Configurer</strong> une fois l'installation terminée.</li>
+</ol>
+<h3 id="depuis-github">Depuis GitHub</h3>
+<pre><code class="language-bash">cd modules/
+git clone https://github.com/Websource-fr/websourcesociallogin.git
+cd ..
+php bin/console prestashop:module install websourcesociallogin
+</code></pre>
+<p>Le dépôt contient aussi <code>docs/</code> et <code>tests/</code> (inutiles en production). Le dossier <code>vendor/</code> est fourni : aucune commande Composer n'est nécessaire.</p>
+<h3 id="mise-a-jour">Mise à jour</h3>
+<p>Remplacez le dossier du module (ou ré-importez le zip de la nouvelle version) : PrestaShop exécute les scripts de mise à jour. Vos réglages sont conservés.</p>
+<h2 id="4-configuration-generale">4. Configuration générale</h2>
+<p>Back-office &gt; Modules &gt; Websource Social Login &gt; <strong>Configurer</strong>. L'écran est organisé en quatre parties : <strong>Réseaux</strong>, <strong>Apparence et emplacements</strong>, <strong>Textes et RGPD</strong>, <strong>Aide</strong>. Les réglages sont <strong>par boutique</strong> (multiboutique : choisissez le contexte de boutique).</p>
+<p>Pour chaque réseau (voir la section 5) :</p>
+<table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Activer</td>
+<td>interrupteur du réseau</td>
+</tr>
+<tr>
+<td>Client ID / Client Secret</td>
+<td>fournis par le réseau ; le secret est <strong>chiffré</strong> en base et jamais renvoyé dans la page (« •••• enregistré ») ; laissé vide, il est conservé</td>
+</tr>
+<tr>
+<td>Scopes demandés</td>
+<td>autorisations demandées ; la valeur par défaut convient dans presque tous les cas</td>
+</tr>
+<tr>
+<td>Position</td>
+<td>ordre d'affichage (1 = premier)</td>
+</tr>
+<tr>
+<td>URL de rappel</td>
+<td>adresse exacte à coller chez le réseau, avec bouton <strong>Copier</strong></td>
+</tr>
+<tr>
+<td>Tester la configuration</td>
+<td>vérifie les champs renseignés, l'URL de rappel en https, les scopes et l'activation</td>
+</tr>
+<tr>
+<td>État</td>
+<td><em>Actif</em>, <em>Configuré</em>, <em>Incomplet</em>, <em>Non configuré</em></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Un réseau n'apparaît côté boutique que s'il est activé ET complet.</strong></p>
+<p><img alt="Carte réseau et guide pas à pas Google" src="../img/bo-fr-google-guide.png" /></p>
+<h2 id="5-guides-par-reseau">5. Guides par réseau</h2>
+<p>Principe commun : (1) créer une application chez le réseau, (2) y enregistrer l'<strong>URL de rappel</strong> affichée par le module (elle est propre à votre boutique ; dans les exemples ci-dessous : <code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code>), (3) copier l'identifiant et le secret dans le module, (4) activer, enregistrer, tester, (5) <strong>publier l'application</strong> chez le réseau : tant qu'elle est en mode test ou développement, seuls vos comptes de test peuvent se connecter.</p>
+<p>Ces guides reprennent ceux de l'écran de configuration (onglet Réseaux, « Guide pas à pas »), qui affichent directement votre URL de rappel avec un bouton Copier. Les interfaces des réseaux évoluent : en cas d'écart, suivez l'intitulé des étapes et les liens officiels.</p>
+<h3 id="1-google">1. Google</h3>
+<p>Google utilise OpenID Connect : le module valide la signature de l'id_token et n'accepte l'e-mail que s'il est vérifié par Google. Comptez environ 10 minutes. Aucun coût.</p>
+<ul>
+<li><strong>Console</strong> : <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console</a></li>
+<li><strong>URL de rappel (callback) à enregistrer</strong> : <code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code></li>
+</ul>
+<h4 id="etape-1-creer-ou-choisir-un-projet-google-cloud">Étape 1. Créer (ou choisir) un projet Google Cloud</h4>
+<p><em>Où : console.cloud.google.com &gt; sélecteur de projet (en haut) &gt; Nouveau projet</em></p>
+<p>Connectez-vous avec le compte Google de votre entreprise. Cliquez sur le sélecteur de projet, puis <strong>Nouveau projet</strong>. Donnez-lui le nom de votre boutique et validez.</p>
+<h4 id="etape-2-configurer-lecran-de-consentement-oauth">Étape 2. Configurer l'écran de consentement OAuth</h4>
+<p><em>Où : Menu ☰ &gt; API et services &gt; Écran de consentement OAuth (ou « Google Auth Platform &gt; Branding »)</em></p>
+<p>C'est la fenêtre que vos clients voient en se connectant. Choisissez le type d'utilisateur <strong>Externe</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Champs à renseigner</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nom de l'application</td>
+<td>le nom de votre boutique</td>
+</tr>
+<tr>
+<td>E-mail d'assistance utilisateur</td>
+<td>une adresse que vous lisez</td>
+</tr>
+<tr>
+<td>Domaines autorisés</td>
+<td>votre-boutique.example</td>
+</tr>
+<tr>
+<td>Lien vers les règles de confidentialité</td>
+<td>https://votre-boutique.example/ (votre page « politique de confidentialité »)</td>
+</tr>
+<tr>
+<td>E-mail du développeur</td>
+<td>votre e-mail</td>
+</tr>
+</tbody>
+</table>
+<h4 id="etape-3-declarer-les-autorisations-scopes">Étape 3. Déclarer les autorisations (scopes)</h4>
+<p><em>Où : Écran de consentement &gt; Accès aux données (Scopes) &gt; Ajouter ou supprimer des niveaux d'accès</em></p>
+<p>Ajoutez uniquement les trois niveaux d'accès « non sensibles » : <code>openid</code>, <code>.../auth/userinfo.email</code> et <code>.../auth/userinfo.profile</code>. Ils ne déclenchent pas de vérification approfondie par Google.</p>
+<h4 id="etape-4-creer-lid-client-oauth">Étape 4. Créer l'ID client OAuth</h4>
+<p><em>Où : Menu ☰ &gt; API et services &gt; Identifiants &gt; + Créer des identifiants &gt; ID client OAuth</em></p>
+<p>Type d'application : <strong>Application Web</strong>. Dans <strong>URI de redirection autorisés</strong>, collez exactement l'adresse ci-dessous (https, sans espace, sans « / » ajouté).</p>
+<table>
+<thead>
+<tr>
+<th>Champs à renseigner</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Type d'application</td>
+<td>Application Web</td>
+</tr>
+<tr>
+<td>Nom</td>
+<td>Connexion boutique</td>
+</tr>
+<tr>
+<td>Origines JavaScript autorisées</td>
+<td>laisser vide (inutile)</td>
+</tr>
+<tr>
+<td>URI de redirection autorisés</td>
+<td><code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="etape-5-copier-lid-client-et-le-code-secret-dans-le-module">Étape 5. Copier l'ID client et le code secret dans le module</h4>
+<p><em>Où : Fenêtre « Client OAuth créé » &gt; ID client + Code secret du client</em></p>
+<p>Copiez l'<strong>ID client</strong> (se termine par <code>.apps.googleusercontent.com</code>) et le <strong>Code secret du client</strong>, collez-les dans les champs de ce module, activez Google puis enregistrez. Le secret n'est affiché en clair nulle part ensuite.</p>
+<h4 id="etape-6-passer-en-production">Étape 6. Passer en production</h4>
+<p><em>Où : Écran de consentement &gt; État de publication &gt; Publier l'application</em></p>
+<p>Tant que l'application est en <strong>Test</strong>, seuls les « utilisateurs tests » que vous listez (100 maximum) peuvent se connecter, et leur autorisation expire au bout de 7 jours. Cliquez sur <strong>Publier l'application</strong> (statut « En production »). Avec uniquement les scopes non sensibles ci-dessus, aucune vérification par Google n'est nécessaire.</p>
+<p><strong>Autorisations (scopes)</strong> : Scopes demandés : `. Le module reçoit : identifiant Google (sub), e-mail, état de vérification de l'e-mail, prénom, nom. Rien d'autre.</p>
+<p><strong>Erreurs fréquentes</strong></p>
+<ul>
+<li><strong>Erreur 400 : redirect_uri_mismatch</strong> : L'URI de redirection saisie dans Google n'est pas strictement identique à <code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code>. Vérifiez https, le nom de domaine (avec ou sans www), l'absence de « / » final en trop. La modification peut mettre quelques minutes à être prise en compte.</li>
+<li><strong>Erreur 403 : access_denied / « L'application n'a pas terminé le processus de validation »</strong> : L'application est encore en mode Test et votre compte n'est pas dans les utilisateurs tests : ajoutez-le, ou publiez l'application (étape 6).</li>
+<li><strong>Erreur 401 : invalid_client</strong> : L'ID client ou le code secret est incorrect ou a été régénéré. Recollez-les depuis la page Identifiants.</li>
+<li><strong>« Cette application n'est pas validée par Google »</strong> : Normal si vous demandez des scopes sensibles. Limitez-vous aux trois scopes de l'étape 3.</li>
+<li><strong>Erreur 400 : invalid_request (« Les règles de Google interdisent… »)</strong> : Une URI de redirection n'est pas en https, ou le domaine n'est pas déclaré dans l'écran de consentement.</li>
+</ul>
+<p><strong>Liens officiels</strong> : <a href="https://console.cloud.google.com/apis/credentials">Console des identifiants Google</a> · <a href="https://developers.google.com/identity/openid-connect/openid-connect">Documentation OpenID Connect de Google</a></p>
+<h3 id="2-facebook">2. Facebook</h3>
+<p>Facebook Login (Meta). Les permissions <code>public_profile</code> et <code>email</code> sont accordées par défaut, sans passer par la revue d'application. Comptez environ 15 minutes. Gratuit.</p>
+<ul>
+<li><strong>Console</strong> : <a href="https://developers.facebook.com/apps/">Meta for Developers</a></li>
+<li><strong>URL de rappel (callback) à enregistrer</strong> : <code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code></li>
+</ul>
+<h4 id="etape-1-creer-une-app-meta">Étape 1. Créer une app Meta</h4>
+<p><em>Où : developers.facebook.com &gt; Mes apps &gt; Créer une app</em></p>
+<p>Connectez-vous avec un compte Facebook (devenu « compte développeur »). Cliquez sur <strong>Créer une app</strong>, saisissez le nom de votre boutique et votre e-mail. Pour le cas d'usage, choisissez <strong>Authentifier et demander des données aux utilisateurs avec Facebook Login</strong>. Type d'app : « Consommateur » ou « Autre », selon l'assistant.</p>
+<h4 id="etape-2-renseigner-les-informations-de-base">Étape 2. Renseigner les informations de base</h4>
+<p><em>Où : Paramètres de l'app &gt; Général</em></p>
+<p>Renseignez ce qui est obligatoire pour passer en mode Live, puis copiez l'<strong>ID de l'app</strong> et la <strong>Clé secrète</strong> (bouton « Afficher », votre mot de passe Facebook est demandé).</p>
+<table>
+<thead>
+<tr>
+<th>Champs à renseigner</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Domaines de l'app</td>
+<td>votre-boutique.example</td>
+</tr>
+<tr>
+<td>URL de la politique de confidentialité</td>
+<td>votre page de politique de confidentialité (obligatoire)</td>
+</tr>
+<tr>
+<td>URL des conditions d'utilisation</td>
+<td>votre page de CGV (recommandé)</td>
+</tr>
+<tr>
+<td>Icône de l'app (1024×1024)</td>
+<td>votre logo</td>
+</tr>
+<tr>
+<td>Catégorie</td>
+<td>Achats / Commerce</td>
+</tr>
+</tbody>
+</table>
+<h4 id="etape-3-configurer-facebook-login">Étape 3. Configurer Facebook Login</h4>
+<p><em>Où : Tableau de bord &gt; Cas d'usage &gt; Facebook Login &gt; Personnaliser &gt; Paramètres (ou Produits &gt; Facebook Login &gt; Paramètres)</em></p>
+<p>Activez <strong>Connexion OAuth client</strong> et <strong>Connexion OAuth Web</strong>, <strong>Forcer HTTPS</strong> et le <strong>mode strict</strong> pour les URI de redirection, puis collez l'adresse ci-dessous.</p>
+<table>
+<thead>
+<tr>
+<th>Champs à renseigner</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>URI de redirection OAuth valides</td>
+<td><code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="etape-4-verifier-les-permissions">Étape 4. Vérifier les permissions</h4>
+<p><em>Où : Cas d'usage &gt; Facebook Login &gt; Permissions et fonctionnalités</em></p>
+<p>Assurez-vous que <code>public_profile</code> et <code>email</code> sont sur « Accès standard » (ils le sont par défaut). Aucune revue d'application n'est nécessaire pour ces deux-là.</p>
+<h4 id="etape-5-coller-lid-et-la-cle-secrete-dans-le-module">Étape 5. Coller l'ID et la clé secrète dans le module</h4>
+<p><em>Où : Ce module &gt; Facebook</em></p>
+<p>ID de l'app = « Client ID », Clé secrète = « Client Secret ». Activez Facebook et enregistrez.</p>
+<h4 id="etape-6-passer-lapp-en-mode-live">Étape 6. Passer l'app en mode Live</h4>
+<p><em>Où : Bandeau en haut du tableau de bord &gt; « Mode de l'app » : Développement → Live</em></p>
+<p>En mode <strong>Développement</strong>, seuls les administrateurs, développeurs et testeurs de l'app peuvent se connecter. Basculez sur <strong>Live</strong> une fois la politique de confidentialité et la catégorie renseignées. La « vérification de l'entreprise » n'est demandée que pour des accès avancés, pas pour public_profile + email.</p>
+<p><strong>Autorisations (scopes)</strong> : Permissions demandées : `. Le module reçoit : identifiant Facebook (id), prénom, nom et e-mail s'il existe. Facebook ne renvoie que des e-mails confirmés.</p>
+<p><strong>Erreurs fréquentes</strong></p>
+<ul>
+<li><strong>« URL bloquée : la redirection a échoué » / redirect_uri is not whitelisted</strong> : L'URI saisie dans « URI de redirection OAuth valides » diffère de <code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code>. Copiez-la avec le bouton, activez le mode strict et réessayez.</li>
+<li><strong>« Fonctionnalité indisponible » / « L'app n'est pas active »</strong> : L'app est en mode Développement et votre compte n'a pas de rôle dessus. Ajoutez-le dans Rôles de l'app, ou passez en Live (étape 6).</li>
+<li><strong>« Can't load URL : le domaine de cette URL n'est pas inclus dans les domaines de l'app »</strong> : Ajoutez votre-boutique.example dans Paramètres &gt; Général &gt; Domaines de l'app.</li>
+<li><strong>Aucun e-mail reçu</strong> : Le client n'a pas d'e-mail confirmé sur Facebook, ou il a décoché l'autorisation. Le module lui demande alors de saisir son e-mail, qu'il confirme par un lien.</li>
+<li><strong>Invalid client_secret / Error validating client secret</strong> : La clé secrète a été régénérée ou mal copiée : recollez-la.</li>
+</ul>
+<p><strong>Liens officiels</strong> : <a href="https://developers.facebook.com/apps/">Mes apps Meta</a> · <a href="https://developers.facebook.com/docs/facebook-login/web">Documentation Facebook Login</a></p>
+<h3 id="3-x-twitter">3. X (Twitter)</h3>
+<p>X (anciennement Twitter) : OAuth 2.0 avec PKCE, application de type « client confidentiel ». L'e-mail n'est fourni que si votre application y est autorisée (scope <code>users.email</code>) ; sinon le module le demandera au client. Les offres et quotas de l'API X évoluent : vérifiez-les sur le portail.</p>
+<ul>
+<li><strong>Console</strong> : <a href="https://developer.x.com/en/portal/dashboard">X Developer Portal</a></li>
+<li><strong>URL de rappel (callback) à enregistrer</strong> : <code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code></li>
+</ul>
+<h4 id="etape-1-ouvrir-un-compte-developpeur-x">Étape 1. Ouvrir un compte développeur X</h4>
+<p><em>Où : developer.x.com &gt; Developer Portal</em></p>
+<p>Connectez-vous avec le compte X de votre entreprise et acceptez le contrat développeur (décrivez l'usage : « connexion des clients de ma boutique avec leur compte X »).</p>
+<h4 id="etape-2-creer-un-project-et-une-app">Étape 2. Créer un Project et une App</h4>
+<p><em>Où : Developer Portal &gt; Projects &amp; Apps &gt; + Add Project (puis Add App)</em></p>
+<p>L'application doit obligatoirement être rattachée à un <strong>Project</strong> (sinon l'API répond « client-not-enrolled »).</p>
+<h4 id="etape-3-activer-lauthentification-utilisateur-oauth-20">Étape 3. Activer l'authentification utilisateur (OAuth 2.0)</h4>
+<p><em>Où : Votre App &gt; Settings &gt; User authentication settings &gt; Set up</em></p>
+<p>C'est ici que se règle la connexion.</p>
+<table>
+<thead>
+<tr>
+<th>Champs à renseigner</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>App permissions</td>
+<td>Read (lecture seule suffit)</td>
+</tr>
+<tr>
+<td>Request email from users</td>
+<td>à cocher si disponible (nécessite les deux URL ci-dessous)</td>
+</tr>
+<tr>
+<td>Type of App</td>
+<td>Web App, Automated App or Bot (= Confidential client)</td>
+</tr>
+<tr>
+<td>Callback URI / Redirect URL</td>
+<td><code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code></td>
+</tr>
+<tr>
+<td>Website URL</td>
+<td>https://votre-boutique.example</td>
+</tr>
+<tr>
+<td>Terms of service / Privacy policy</td>
+<td>URL de vos CGV et de votre politique de confidentialité</td>
+</tr>
+</tbody>
+</table>
+<h4 id="etape-4-recuperer-le-client-id-et-le-client-secret">Étape 4. Récupérer le Client ID et le Client Secret</h4>
+<p><em>Où : Votre App &gt; Keys and tokens &gt; OAuth 2.0 Client ID and Client Secret</em></p>
+<p>Cliquez sur <strong>Generate</strong> (ou Regenerate). Le <strong>Client Secret n'est affiché qu'une seule fois</strong> : copiez-le immédiatement. N'utilisez pas « API Key / API Secret » ni le « Bearer Token » : ce sont d'autres mécanismes (OAuth 1.0a).</p>
+<h4 id="etape-5-choisir-les-scopes">Étape 5. Choisir les scopes</h4>
+<p><em>Où : Ce module &gt; X &gt; Scopes</em></p>
+<p>Par défaut : <code>users.read tweet.read users.email</code>. Si X répond « invalid_scope », supprimez <code>users.email</code> : la connexion fonctionnera, et le module demandera l'e-mail au client.</p>
+<h4 id="etape-6-coller-les-identifiants-dans-le-module">Étape 6. Coller les identifiants dans le module</h4>
+<p><em>Où : Ce module &gt; X</em></p>
+<p>Client ID, Client Secret, activez X puis enregistrez.</p>
+<h4 id="etape-7-mise-en-production">Étape 7. Mise en production</h4>
+<p><em>Où : Developer Portal &gt; votre App &gt; Settings</em></p>
+<p>X n'a pas de mode « développement / live » : l'application est utilisable dès sa création. Vérifiez cependant le niveau d'accès (Free, Basic…) et ses quotas de requêtes : une boutique à fort trafic peut dépasser les limites d'un niveau gratuit.</p>
+<p><strong>Autorisations (scopes)</strong> : Scopes demandés : `. Le module reçoit : identifiant X (id), nom affiché et, si autorisé, l'e-mail confirmé (confirmed_email).</p>
+<p><strong>Erreurs fréquentes</strong></p>
+<ul>
+<li><strong>« Something went wrong. You weren't able to give access to the App »</strong> : L'URL de rappel enregistrée dans X diffère de <code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code> (https, domaine, « / » final). Corrigez-la dans User authentication settings.</li>
+<li><strong>invalid_scope</strong> : Le scope <code>users.email</code> n'est pas autorisé pour votre application : retirez-le dans les scopes du module.</li>
+<li><strong>client-not-enrolled / 403</strong> : L'App n'est pas dans un Project, ou votre niveau d'accès n'inclut pas l'endpoint /2/users/me.</li>
+<li><strong>429 Too Many Requests</strong> : Quota de l'offre X dépassé : patientez ou changez d'offre.</li>
+<li><strong>Aucun e-mail reçu</strong> : Cas normal si l'e-mail n'est pas autorisé ou n'est pas confirmé sur X : le client saisit son e-mail et le confirme par un lien.</li>
+</ul>
+<p><strong>Liens officiels</strong> : <a href="https://developer.x.com/en/portal/dashboard">X Developer Portal</a> · <a href="https://docs.x.com/resources/fundamentals/authentication/oauth-2-0/authorization-code">Documentation OAuth 2.0 (X)</a></p>
+<h3 id="4-linkedin">4. LinkedIn</h3>
+<p>LinkedIn via le produit « Sign In with LinkedIn using OpenID Connect » (OpenID Connect standard). Une Page LinkedIn d'entreprise est obligatoire pour créer l'application. Comptez environ 10 minutes. Gratuit.</p>
+<ul>
+<li><strong>Console</strong> : <a href="https://www.linkedin.com/developers/apps">LinkedIn Developer Portal</a></li>
+<li><strong>URL de rappel (callback) à enregistrer</strong> : <code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code></li>
+</ul>
+<h4 id="etape-1-creer-lapplication">Étape 1. Créer l'application</h4>
+<p><em>Où : linkedin.com/developers/apps &gt; Create app</em></p>
+<p>Renseignez les champs ; la Page LinkedIn doit appartenir à votre entreprise (vous devez en être administrateur).</p>
+<table>
+<thead>
+<tr>
+<th>Champs à renseigner</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>App name</td>
+<td>le nom de votre boutique</td>
+</tr>
+<tr>
+<td>LinkedIn Page</td>
+<td>la Page LinkedIn de votre entreprise</td>
+</tr>
+<tr>
+<td>Privacy policy URL</td>
+<td>votre politique de confidentialité</td>
+</tr>
+<tr>
+<td>App logo</td>
+<td>votre logo (minimum 100×100 px)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="etape-2-ajouter-le-produit-sign-in-with-linkedin-using-openid-connect">Étape 2. Ajouter le produit « Sign In with LinkedIn using OpenID Connect »</h4>
+<p><em>Où : Votre app &gt; onglet Products</em></p>
+<p>Cliquez sur <strong>Request access</strong> en face de « Sign In with LinkedIn using OpenID Connect » (accès accordé immédiatement). Sans ce produit, LinkedIn répond « unauthorized_scope_error ».</p>
+<h4 id="etape-3-declarer-lurl-de-redirection">Étape 3. Déclarer l'URL de redirection</h4>
+<p><em>Où : Votre app &gt; onglet Auth &gt; OAuth 2.0 settings &gt; Authorized redirect URLs for your app</em></p>
+<p>Cliquez sur le crayon, <strong>Add redirect URL</strong>, collez l'adresse ci-dessous puis Update.</p>
+<table>
+<thead>
+<tr>
+<th>Champs à renseigner</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authorized redirect URLs</td>
+<td><code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="etape-4-copier-le-client-id-et-le-client-secret">Étape 4. Copier le Client ID et le Client Secret</h4>
+<p><em>Où : Votre app &gt; onglet Auth &gt; Application credentials</em></p>
+<p>Copiez le <strong>Client ID</strong> et le <strong>Primary Client Secret</strong>, collez-les dans ce module, activez LinkedIn puis enregistrez.</p>
+<h4 id="etape-5-verifier-lapplication">Étape 5. Vérifier l'application</h4>
+<p><em>Où : Votre app &gt; onglet Settings &gt; Verify</em></p>
+<p>Cliquez sur <strong>Verify</strong> : LinkedIn génère un lien que l'administrateur de la Page doit approuver. Une application non vérifiée peut afficher un avertissement aux clients. Il n'existe pas de mode « live » séparé : l'app fonctionne dès l'ajout du produit.</p>
+<p><strong>Autorisations (scopes)</strong> : Scopes demandés : ` (openid, profile, email). Le module reçoit : identifiant LinkedIn (sub), prénom, nom, e-mail et son état de vérification.</p>
+<p><strong>Erreurs fréquentes</strong></p>
+<ul>
+<li><strong>redirect_uri doesn't match / Bummer, something went wrong</strong> : L'URL enregistrée dans l'onglet Auth diffère de <code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code>. Elle doit être identique au caractère près.</li>
+<li><strong>unauthorized_scope_error / scope not authorized</strong> : Le produit « Sign In with LinkedIn using OpenID Connect » n'a pas été ajouté (onglet Products) : ajoutez-le.</li>
+<li><strong>invalid_client_id / invalid_client_secret</strong> : Recopiez le Client ID et le Primary Client Secret depuis l'onglet Auth (pas l'identifiant de la Page).</li>
+<li><strong>Aucun e-mail (ou e-mail non vérifié)</strong> : Le membre n'a pas d'e-mail confirmé : le module lui demande son e-mail et le confirme par un lien.</li>
+</ul>
+<p><strong>Liens officiels</strong> : <a href="https://www.linkedin.com/developers/apps">Mes applications LinkedIn</a> · <a href="https://learn.microsoft.com/linkedin/consumer/integrations/self-serve/sign-in-with-linkedin-v2">Documentation Sign In with LinkedIn (OpenID Connect)</a></p>
+<h3 id="5-microsoft">5. Microsoft</h3>
+<p>Microsoft Entra ID (comptes professionnels/scolaires, et comptes personnels Outlook, Hotmail, Xbox). Important : Microsoft ne garantit pas que l'e-mail d'un compte professionnel appartient à son titulaire ; le module ne le considère donc comme vérifié que si Microsoft l'atteste (revendication <code>xms_edov</code>) et demande sinon une confirmation par e-mail.</p>
+<ul>
+<li><strong>Console</strong> : <a href="https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade/quickStartType~/null/sourceType/Microsoft_AAD_IAM">Microsoft Entra admin center</a></li>
+<li><strong>URL de rappel (callback) à enregistrer</strong> : <code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code></li>
+</ul>
+<h4 id="etape-1-inscrire-une-application">Étape 1. Inscrire une application</h4>
+<p><em>Où : entra.microsoft.com &gt; Identité &gt; Applications &gt; Inscriptions d'applications &gt; + Nouvelle inscription</em></p>
+<p>Il faut un compte Azure/Entra (un compte Microsoft gratuit suffit pour créer le locataire).</p>
+<table>
+<thead>
+<tr>
+<th>Champs à renseigner</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nom</td>
+<td>le nom de votre boutique</td>
+</tr>
+<tr>
+<td>Types de comptes pris en charge</td>
+<td>Comptes dans un annuaire d'organisation et comptes Microsoft personnels (multilocataire et personnels)</td>
+</tr>
+<tr>
+<td>URI de redirection - plateforme</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>URI de redirection</td>
+<td><code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="etape-2-noter-lid-dapplication-client">Étape 2. Noter l'ID d'application (client)</h4>
+<p><em>Où : Votre inscription &gt; Vue d'ensemble</em></p>
+<p>Copiez l'<strong>ID d'application (client)</strong> : c'est le Client ID. Le champ « Locataire » du module reste sur <code>common</code> (comptes professionnels et personnels). Utilisez <code>consumers</code> pour les seuls comptes personnels, <code>organizations</code> pour les seuls comptes professionnels, ou l'ID de répertoire (locataire) pour un seul annuaire.</p>
+<h4 id="etape-3-creer-un-secret-client">Étape 3. Créer un secret client</h4>
+<p><em>Où : Certificats et secrets &gt; Secrets client &gt; + Nouveau secret client</em></p>
+<p>Choisissez une durée (24 mois maximum), puis copiez immédiatement la colonne <strong>Valeur</strong> (pas l'« ID de secret »). Elle ne sera plus affichée. <strong>Notez la date d'expiration</strong> : à l'échéance, la connexion cessera de fonctionner tant que vous n'aurez pas créé un nouveau secret.</p>
+<h4 id="etape-4-verifier-les-autorisations">Étape 4. Vérifier les autorisations</h4>
+<p><em>Où : Autorisations de l'API</em></p>
+<p>Microsoft Graph, autorisations déléguées : <code>openid</code>, <code>profile</code>, <code>email</code> (et User.Read par défaut). Aucun consentement administrateur n'est requis pour ces droits.</p>
+<h4 id="etape-5-ajouter-les-revendications-facultatives-recommande">Étape 5. Ajouter les revendications facultatives (recommandé)</h4>
+<p><em>Où : Configuration des jetons &gt; + Ajouter une revendication facultative &gt; ID</em></p>
+<p>Ajoutez <code>email</code>, <code>given_name</code>, <code>family_name</code> et, si proposée, <code>xms_edov</code> (domaine de l'e-mail vérifié). Acceptez d'activer l'autorisation Graph « email » si Entra le propose.</p>
+<h4 id="etape-6-marque-et-mise-en-production">Étape 6. Marque et mise en production</h4>
+<p><em>Où : Image de marque et propriétés</em></p>
+<p>Renseignez le logo, les URL des conditions d'utilisation et de la politique de confidentialité, et si possible la <strong>vérification de l'éditeur</strong> (supprime la mention « non vérifié » à l'écran de consentement). Il n'y a pas de mode « test » à quitter : l'application est utilisable dès son inscription. Dans certaines organisations, un administrateur doit autoriser l'application pour ses utilisateurs.</p>
+<p><strong>Autorisations (scopes)</strong> : Scopes demandés : `. Le module reçoit : identifiant (locataire + objet), nom, e-mail (préféré : revendication email).</p>
+<p><strong>Erreurs fréquentes</strong></p>
+<ul>
+<li><strong>AADSTS50011 : l'URL de réponse ne correspond pas</strong> : L'URI de redirection de l'inscription (plateforme « Web ») diffère de <code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code>. Corrigez-la dans Authentification.</li>
+<li><strong>AADSTS7000215 : secret client invalide</strong> : Vous avez copié l'« ID de secret » au lieu de la <strong>Valeur</strong>, ou le secret a expiré : créez-en un nouveau.</li>
+<li><strong>AADSTS700016 / AADSTS50020 : application introuvable dans le locataire</strong> : Le type de comptes de l'inscription ou le champ « Locataire » du module ne correspondent pas (ex. compte personnel avec locataire « organizations »).</li>
+<li><strong>AADSTS65001 : consentement requis</strong> : Un administrateur de l'organisation du client doit autoriser l'application, ou le client doit accepter la demande.</li>
+<li><strong>Un e-mail est redemandé au client</strong> : Normal : Microsoft n'atteste pas la propriété de l'e-mail (protection contre l'attaque nOAuth). Ajouter la revendication <code>xms_edov</code> (étape 5) évite cette étape lorsque Microsoft la fournit.</li>
+</ul>
+<p><strong>Liens officiels</strong> : <a href="https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade/quickStartType~/null/sourceType/Microsoft_AAD_IAM">Inscriptions d'applications Entra</a> · <a href="https://learn.microsoft.com/entra/identity-platform/v2-oauth2-auth-code-flow">Documentation du flux de code d'autorisation</a></p>
+<h3 id="6-apple">6. Apple</h3>
+<p>Sign in with Apple : le plus technique des réseaux. Il exige le programme Apple Developer (99 USD/an), un Services ID, une clé privée <code>.p8</code> et une adresse en HTTPS. Le module génère lui-même le « client secret » (JWT signé ES256) à chaque connexion à partir de votre clé : vous n'avez pas à le renouveler tous les 6 mois. Apple peut masquer l'e-mail du client (adresse relais @privaterelay.appleid.com).</p>
+<ul>
+<li><strong>Console</strong> : <a href="https://developer.apple.com/account/resources/identifiers/list/serviceId">Apple Developer</a></li>
+<li><strong>URL de rappel (callback) à enregistrer</strong> : <code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code></li>
+</ul>
+<h4 id="etape-1-rejoindre-lapple-developer-program">Étape 1. Rejoindre l'Apple Developer Program</h4>
+<p><em>Où : developer.apple.com/programs &gt; Enroll</em></p>
+<p>L'adhésion est payante (99 USD/an) et peut prendre 1 à 2 jours pour une entreprise (numéro D-U-N-S).</p>
+<h4 id="etape-2-creer-un-app-id-avec-sign-in-with-apple">Étape 2. Créer un App ID avec « Sign in with Apple »</h4>
+<p><em>Où : Certificates, Identifiers &amp; Profiles &gt; Identifiers &gt; + &gt; App IDs &gt; App</em></p>
+<p>Description et Bundle ID (ex. <code>fr.votreboutique.web</code>). Dans Capabilities, cochez <strong>Sign in with Apple</strong>, puis Continue &gt; Register. Cet App ID sert de « Primary App ID ».</p>
+<h4 id="etape-3-creer-un-services-id-client-id">Étape 3. Créer un Services ID (= Client ID)</h4>
+<p><em>Où : Identifiers &gt; + &gt; Services IDs</em></p>
+<p>Description et Identifier (ex. <code>fr.votreboutique.signin</code>) : cet <strong>Identifier est le Client ID</strong>. Cochez <strong>Sign in with Apple</strong> puis cliquez sur <strong>Configure</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Champs à renseigner</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Primary App ID</td>
+<td>l'App ID créé à l'étape 2</td>
+</tr>
+<tr>
+<td>Domains and Subdomains</td>
+<td>votre-boutique.example (sans https://)</td>
+</tr>
+<tr>
+<td>Return URLs</td>
+<td><code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="etape-4-creer-une-cle-privee">Étape 4. Créer une clé privée</h4>
+<p><em>Où : Keys &gt; + &gt; Key Name &gt; Sign in with Apple &gt; Configure</em></p>
+<p>Choisissez le Primary App ID, validez, puis <strong>téléchargez le fichier <code>AuthKey_XXXXXXXXXX.p8</code></strong> : Apple ne le propose qu'une seule fois, gardez-le en lieu sûr. Notez le <strong>Key ID</strong> (10 caractères).</p>
+<h4 id="etape-5-relever-le-team-id">Étape 5. Relever le Team ID</h4>
+<p><em>Où : developer.apple.com/account &gt; Membership details &gt; Team ID</em></p>
+<p>Identifiant de 10 caractères.</p>
+<h4 id="etape-6-remplir-le-module">Étape 6. Remplir le module</h4>
+<p><em>Où : Ce module &gt; Apple</em></p>
+<p>Services ID, Team ID, Key ID, puis collez <strong>tout le contenu</strong> du fichier .p8 (de <code>-----BEGIN PRIVATE KEY-----</code> à <code>-----END PRIVATE KEY-----</code>) dans le champ « Clé privée ». Elle est chiffrée en base et jamais renvoyée au navigateur. Activez Apple et enregistrez.</p>
+<h4 id="etape-7-mise-en-production-et-e-mails-relais">Étape 7. Mise en production et e-mails relais</h4>
+<p><em>Où : Certificates, Identifiers &amp; Profiles &gt; More &gt; Configure Sign in with Apple for Email Communication</em></p>
+<p>Apple n'a pas de mode « test » : tout fonctionne dès la configuration. Si un client choisit « Masquer mon e-mail », vos e-mails transactionnels passent par un relais Apple : enregistrez là votre domaine d'envoi et vos adresses d'expédition (SPF et DKIM valides) sinon ils ne seront pas livrés. Apple peut aussi demander de vérifier le domaine en déposant un fichier dans <code>/.well-known/</code>.</p>
+<p><strong>Autorisations (scopes)</strong> : Scopes demandés : `. Le module reçoit : identifiant Apple (sub), e-mail (réel ou relais), état de vérification, et le nom uniquement lors de la toute première autorisation.</p>
+<p><strong>Erreurs fréquentes</strong></p>
+<ul>
+<li><strong>invalid_client</strong> : Le Services ID, le Team ID, le Key ID ou la clé .p8 ne correspondent pas, ou la clé n'est pas associée au bon Primary App ID. Recréez la clé si besoin.</li>
+<li><strong>invalid_request : Invalid web redirect url / redirect_uri mismatch</strong> : Les « Return URLs » du Services ID diffèrent de <code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code>, ou le domaine n'est pas listé dans « Domains and Subdomains ».</li>
+<li><strong>Retour sur le site « session expirée » après Apple</strong> : Apple répond en POST depuis un autre domaine : le site doit être en HTTPS (cookie SameSite=None; Secure). Vérifiez le certificat et que le cookie de liaison n'est pas bloqué.</li>
+<li><strong>Le prénom et le nom sont vides</strong> : Apple n'envoie le nom qu'à la première autorisation. Le client peut révoquer l'accès sur appleid.apple.com &gt; Connexion et sécurité &gt; Se connecter avec Apple, puis recommencer.</li>
+<li><strong>E-mails qui ne partent pas vers @privaterelay.appleid.com</strong> : Enregistrez votre domaine d'envoi dans « Configure Sign in with Apple for Email Communication » (étape 7).</li>
+</ul>
+<p><strong>Liens officiels</strong> : <a href="https://developer.apple.com/account/resources/identifiers/list/serviceId">Services IDs Apple Developer</a> · <a href="https://developer.apple.com/documentation/signinwithapple/configuring-your-webpage-for-sign-in-with-apple">Documentation Sign in with Apple (web)</a></p>
+<h3 id="7-github">7. GitHub</h3>
+<p>GitHub (OAuth App). Idéal pour une clientèle de développeurs. Le module n'utilise que les e-mails marqués « vérifiés » par GitHub. Comptez 5 minutes. Gratuit.</p>
+<ul>
+<li><strong>Console</strong> : <a href="https://github.com/settings/developers">GitHub Developer settings</a></li>
+<li><strong>URL de rappel (callback) à enregistrer</strong> : <code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code></li>
+</ul>
+<h4 id="etape-1-ouvrir-les-reglages-developpeur">Étape 1. Ouvrir les réglages développeur</h4>
+<p><em>Où : github.com &gt; votre avatar &gt; Settings &gt; Developer settings &gt; OAuth Apps &gt; New OAuth App</em></p>
+<p>Pour une application appartenant à une organisation : Organization &gt; Settings &gt; Developer settings &gt; OAuth Apps.</p>
+<h4 id="etape-2-remplir-le-formulaire">Étape 2. Remplir le formulaire</h4>
+<p><em>Où : Register a new OAuth application</em></p>
+<p>GitHub n'accepte <strong>qu'une seule</strong> URL de rappel par OAuth App : créez une application par domaine de boutique.</p>
+<table>
+<thead>
+<tr>
+<th>Champs à renseigner</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Application name</td>
+<td>le nom de votre boutique</td>
+</tr>
+<tr>
+<td>Homepage URL</td>
+<td>https://votre-boutique.example</td>
+</tr>
+<tr>
+<td>Authorization callback URL</td>
+<td><code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code></td>
+</tr>
+<tr>
+<td>Enable Device Flow</td>
+<td>laisser décoché</td>
+</tr>
+</tbody>
+</table>
+<h4 id="etape-3-recuperer-le-client-id-et-generer-le-secret">Étape 3. Récupérer le Client ID et générer le secret</h4>
+<p><em>Où : Après « Register application » &gt; Client ID, puis « Generate a new client secret »</em></p>
+<p>Copiez le <strong>Client ID</strong> puis cliquez sur <strong>Generate a new client secret</strong> : il n'est affiché qu'une seule fois, copiez-le immédiatement dans ce module.</p>
+<h4 id="etape-4-scopes">Étape 4. Scopes</h4>
+<p><em>Où : Ce module &gt; GitHub &gt; Scopes</em></p>
+<p>Par défaut <code>read:user user:email</code> : <code>user:email</code> permet de lire les e-mails du compte, dont le principal vérifié.</p>
+<h4 id="etape-5-mise-en-production">Étape 5. Mise en production</h4>
+<p><em>Où : Application &gt; Advanced / logo</em></p>
+<p>Les OAuth Apps n'ont ni revue ni mode test : elles sont utilisables immédiatement par tous les comptes GitHub. Ajoutez un logo (Upload new logo). Si l'organisation d'un client restreint l'accès aux applications tierces, il verra « Request » : c'est à l'administrateur de son organisation d'approuver.</p>
+<p><strong>Autorisations (scopes)</strong> : Scopes demandés : `. Le module reçoit : identifiant GitHub (id), nom, e-mail principal vérifié.</p>
+<p><strong>Erreurs fréquentes</strong></p>
+<ul>
+<li><strong>redirect_uri_mismatch</strong> : L'URL de rappel de l'OAuth App diffère de <code>https://votre-boutique.example/fr/module/websourcesociallogin/callback</code> (une seule URL possible par application, et son chemin doit commencer par celui enregistré).</li>
+<li><strong>incorrect_client_credentials</strong> : Client ID ou secret erroné : régénérez un secret.</li>
+<li><strong>bad_verification_code</strong> : Le code a déjà été utilisé ou a expiré (10 minutes) : recommencez la connexion.</li>
+<li><strong>Aucun e-mail reçu</strong> : Le compte n'a aucune adresse vérifiée (ou le scope user:email a été retiré) : le client saisit son e-mail et le confirme par un lien.</li>
+</ul>
+<p><strong>Liens officiels</strong> : <a href="https://github.com/settings/developers">OAuth Apps GitHub</a> · <a href="https://docs.github.com/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps">Documentation GitHub OAuth</a></p>
+<h3 id="problemes-courants-tous-reseaux">Problèmes courants (tous réseaux)</h3>
+<ul>
+<li><strong>Aucun bouton n'apparaît</strong> : Un réseau n'est visible que s'il est <strong>activé ET complet</strong> (tous les champs obligatoires renseignés) et que l'emplacement est coché dans « Où afficher les boutons ». Les réseaux incomplets restent invisibles pour vos clients.</li>
+<li><strong>« Session expirée » après le retour du réseau</strong> : Le cookie de liaison a été bloqué (navigateur en navigation privée stricte, domaine différent entre www et sans www) ou la demande a duré plus de 10 minutes. Réessayez ; utilisez toujours la même adresse (l'URL de rappel ci-dessus est celle de la boutique).</li>
+<li><strong>Le réseau refuse une URL « http:// »</strong> : Passez la boutique en HTTPS (Paramètres de la boutique &gt; Trafic &amp; SEO &gt; Activer SSL sur toute la boutique). L'URL de rappel est affichée en https.</li>
+<li><strong>Boutique multilingue ou plusieurs domaines</strong> : L'URL de rappel est la même pour toutes les langues d'un domaine (elle utilise la langue par défaut). Avec plusieurs domaines/boutiques, enregistrez l'URL de chaque boutique chez le réseau (affichée dans chaque boutique).</li>
+</ul>
+<h2 id="6-personnalisation-des-boutons">6. Personnalisation des boutons</h2>
+<p>Onglet <strong>Apparence et emplacements</strong> : l'aperçu se met à jour en direct.</p>
+<table>
+<thead>
+<tr>
+<th>Réglage</th>
+<th>Options</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Style</td>
+<td><em>Contour</em> (fond blanc, bordure du thème), <em>Plein</em> (couleur officielle du réseau), <em>Neutre</em> (aux couleurs du thème)</td>
+</tr>
+<tr>
+<td>Disposition</td>
+<td>colonne pleine largeur, ou grille d'icônes</td>
+</tr>
+<tr>
+<td>Forme</td>
+<td>carrée, arrondie (thème), pilule</td>
+</tr>
+<tr>
+<td>Icône seule</td>
+<td>masque le texte (conservé pour les lecteurs d'écran)</td>
+</tr>
+<tr>
+<td>Rayon, bordure</td>
+<td>en pixels (0 à 32 et 0 à 4)</td>
+</tr>
+<tr>
+<td>Couleurs</td>
+<td>fond, texte, bordure : <code>#rgb</code>, <code>#rrggbb</code>, <code>rgb()</code>, <code>rgba()</code>, <code>transparent</code> ou <code>var(--variable-du-thème)</code> ; toute autre valeur est refusée</td>
+</tr>
+<tr>
+<td>Séparateur « ou »</td>
+<td>affiché ou non</td>
+</tr>
+<tr>
+<td>Dernier réseau utilisé</td>
+<td>mis en premier (cookie local sans donnée personnelle)</td>
+</tr>
+</tbody>
+</table>
+<p>Les logos Google et Microsoft gardent leurs couleurs officielles, comme l'exigent leurs chartes.</p>
+<table>
+<thead>
+<tr>
+<th>Contour</th>
+<th>Plein</th>
+<th>Neutre</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="" src="../img/buttons-fr-outline.png" /></td>
+<td><img alt="" src="../img/buttons-fr-brand.png" /></td>
+<td><img alt="" src="../img/buttons-fr-neutral.png" /></td>
+</tr>
+</tbody>
+</table>
+<h3 id="emplacements">Emplacements</h3>
+<p>Cochez où afficher les boutons : <strong>page de connexion</strong>, <strong>page de création de compte</strong>, <strong>tunnel de commande</strong> (informations personnelles), <strong>en-tête</strong> (menu « Mon compte », visiteurs), <strong>fenêtre de la liste de souhaits</strong>. Les boutons ne s'affichent jamais à un client déjà connecté.</p>
+<p><img alt="Apparence et emplacements" src="../img/bo-fr-appearance.png" /></p>
+<h3 id="textes-et-rgpd">Textes et RGPD</h3>
+<p>Onglet <strong>Textes et RGPD</strong> : texte des boutons (par langue), séparateur et mention d'information affichée sous les boutons (à adapter à votre politique de confidentialité).</p>
+<p><img alt="Textes et RGPD" src="../img/bo-fr-texts-gdpr.png" /></p>
+<h2 id="7-compatibilite-theme">7. Compatibilité thème</h2>
+<p>Le module s'appuie sur deux hooks :</p>
+<ul>
+<li><code>displayCustomerLoginFormAfter</code> : hook natif du formulaire de connexion (thèmes Classic, Hummingbird et la plupart des thèmes tiers). Aucune action requise : les boutons apparaissent sur la page de connexion.</li>
+<li><code>displayWebsourceSocialLogin</code> : hook du module, à ajouter dans votre thème pour les autres emplacements, avec le paramètre <code>place</code> : <code>register</code>, <code>checkout</code>, <code>header</code>, <code>wishlist</code>.</li>
+</ul>
+<p>Si un emplacement n'apparaît pas, ajoutez l'appel dans le gabarit du thème (copie dans votre thème enfant si besoin), puis videz le cache Smarty :</p>
+<pre><code class="language-smarty">{* Page de création de compte : themes/&lt;theme&gt;/templates/customer/registration.tpl, après le formulaire *}
+{hook h='displayWebsourceSocialLogin' place='register'}
+
+{* Tunnel de commande : templates/checkout/_partials/steps/personal-information.tpl *}
+{hook h='displayWebsourceSocialLogin' place='checkout'}
+
+{* Menu « Mon compte » de l'en-tête (visiteur), dans le gabarit de votre bloc compte *}
+{hook h='displayWebsourceSocialLogin' place='header'}
+
+{* Fenêtre de la liste de souhaits (modals/login.tpl du module blockwishlist, surcharge du thème) *}
+{hook h='displayWebsourceSocialLogin' place='wishlist'}
+
+{* Page de connexion si votre thème n'appelle pas le hook natif : templates/customer/authentication.tpl *}
+{hook h='displayCustomerLoginFormAfter'}
+</code></pre>
+<p>La page « Mon compte » reçoit une tuile <strong>Connexions sociales</strong> via le hook natif <code>displayCustomerAccount</code>.</p>
+<p><strong>Style</strong> : <code>views/css/front.css</code> utilise les variables CSS du thème (<code>--color-brand-*</code>, <code>--color-line</code>, <code>--radius-xl</code>...) avec des valeurs de repli. Pour un thème tiers, ajustez le style, les couleurs et le rayon dans l'onglet Apparence, ou surchargez les classes <code>.wssl</code>, <code>.wssl-btn</code>, <code>.wssl__sep</code> dans le CSS de votre thème.</p>
+<p>Après un changement de gabarit : Paramètres avancés &gt; Performances &gt; Vider le cache.</p>
+<h2 id="8-rgpd-et-securite">8. RGPD et sécurité</h2>
+<h3 id="donnees-stockees">Données stockées</h3>
+<p>Table <code>ps_websourcesociallogin_link</code> (une ligne par réseau lié) : client, réseau, identifiant du client chez le réseau, e-mail transmis, date de consentement, date de création, date de dernière connexion. Table <code>ps_websourcesociallogin_flow</code> : états temporaires de connexion (hachés, supprimés à expiration, 10 minutes à 1 heure). <strong>Aucun jeton d'accès n'est stocké ni journalisé.</strong> Le journal PrestaShop ne contient que le réseau, l'événement et un code court (sans e-mail, jeton ni secret) ; l'adresse IP n'est conservée que sous forme de hachage pour la limitation du taux.</p>
+<p>Informez vos clients dans votre politique de confidentialité : le module reçoit du réseau l'identifiant, le prénom, le nom et l'e-mail (rien n'est publié sur le réseau). Une mention configurable s'affiche sous les boutons.</p>
+<h3 id="export-et-suppression">Export et suppression</h3>
+<p>Les liens sont inclus dans l'export RGPD du client (<code>actionExportGDPRData</code>) et supprimés avec le compte (<code>actionDeleteGDPRCustomer</code>, suppression du client). Le client peut délier un réseau lui-même dans Mon compte &gt; Connexions sociales.</p>
+<h3 id="protections">Protections</h3>
+<ul>
+<li><strong>Anti-prise de compte</strong> : jamais de fusion automatique. E-mail vérifié correspondant à un client existant : mot de passe exigé (5 essais maximum). E-mail non vérifié ou absent : lien de confirmation, dans le même navigateur. Microsoft : e-mail considéré non vérifié sauf revendication <code>xms_edov</code> (protection nOAuth).</li>
+<li><code>state</code> aléatoire (256 bits), à usage unique, 10 minutes, lié au navigateur par un cookie <code>HttpOnly</code> ; <code>nonce</code> OpenID Connect ; PKCE S256 là où le réseau le gère.</li>
+<li>id_token : RS256 uniquement (<code>none</code> et HS256 refusés), signature vérifiée par JWKS, contrôle de <code>iss</code>, <code>aud</code>, <code>exp</code>, <code>iat</code>, <code>nbf</code>.</li>
+<li>Redirections sur liste blanche (aucune redirection ouverte).</li>
+<li>Secrets chiffrés au repos (chiffrement PrestaShop), jamais dans le HTML ni le JavaScript.</li>
+<li>Limitation du taux : 30 démarrages par 10 minutes et par IP.</li>
+<li>Liaison et déliaison en POST avec jeton CSRF.</li>
+</ul>
+<h2 id="9-depannage-et-faq">9. Dépannage et FAQ</h2>
+<p><strong>Aucun bouton n'apparaît.</strong> Le réseau doit être activé et complet, et l'emplacement coché. Vérifiez le hook du thème (section 7), videz le cache. Un client connecté ne voit jamais les boutons.</p>
+<p><strong>« redirect_uri_mismatch » ou équivalent.</strong> L'URL enregistrée chez le réseau diffère de celle du module : copiez-la avec le bouton Copier (https, même nom de domaine avec ou sans www, pas de « / » final). Une modification peut mettre quelques minutes à être prise en compte.</p>
+<p><strong>Seuls mes comptes peuvent se connecter.</strong> L'application est en mode test/développement chez le réseau : publiez-la (voir la fin de chaque guide).</p>
+<p><strong>« Session expirée » au retour.</strong> Cookie bloqué, domaine différent (www ou non), ou délai de plus de 10 minutes : recommencez en utilisant toujours la même adresse.</p>
+<p><strong>Le client n'a pas d'e-mail.</strong> Il le saisit puis le confirme par lien (X, Microsoft, Apple avec relais...).</p>
+<p><strong>Où voir les erreurs ?</strong> Paramètres avancés &gt; Informations &gt; Logs : filtrez sur <code>[websourcesociallogin]</code>.</p>
+<p><strong>Boutique multilingue ou multiboutique ?</strong> L'URL de rappel est la même pour toutes les langues d'un domaine. Avec plusieurs domaines ou boutiques, enregistrez l'URL de chaque boutique chez le réseau (affichée dans chaque contexte).</p>
+<p><strong>Mon thème est tiers et un emplacement manque.</strong> Voir la section 7.</p>
+<p><strong>Y a-t-il un coût ?</strong> Le module est gratuit ; les réseaux listés n'ont pas de coût pour la connexion.</p>
+<h2 id="10-desinstallation">10. Désinstallation</h2>
+<p>Modules &gt; Websource Social Login &gt; Désinstaller : supprime les deux tables du module (liens et états temporaires) et tous ses réglages. <strong>Les liens réseau-client sont alors perdus</strong> : les clients créés via un réseau conservent leur compte, mais n'ont pas de mot de passe connu et devront utiliser « Mot de passe oublié ». Pensez à exporter ce dont vous avez besoin avant.</p>
+<h2 id="11-faq-developpeur-ajouter-un-reseau">11. FAQ développeur : ajouter un réseau</h2>
+<p>Les réseaux sont des classes <code>Websource\SocialLogin\Provider\ProviderInterface</code> (dossier <code>src/Provider/</code>). Pour un fournisseur OpenID Connect, étendez <code>OidcProvider</code> ; sinon <code>AbstractProvider</code>.</p>
+<ol>
+<li>Créez <code>src/Provider/MonReseauProvider.php</code> implémentant : <code>id()</code>, <code>label()</code>, <code>fields()</code> (champs de configuration : <code>client_id</code>, <code>client_secret</code>...), <code>defaultScopes()</code>, <code>usesPkce()</code>, <code>usesFormPost()</code>, <code>buildAuthorizationUrl(...)</code> et <code>fetchProfile(...)</code> qui renvoie un objet <code>Profile</code> (identifiant, e-mail, e-mail vérifié, prénom, nom).</li>
+<li>Enregistrez-le dans <code>ProviderRegistry::default()</code>.</li>
+<li>Ajoutez son guide dans <code>src/Guide/data_fr.php</code> et <code>data_en.php</code> (clés <code>intro</code>, <code>console</code>, <code>steps</code>, <code>scopes</code>, <code>errors</code>, <code>links</code>) et son logo dans <code>src/Render/IconLibrary.php</code>.</li>
+<li>Lancez les tests : <code>php tests/run.php</code> (sans PrestaShop ni réseau ; fournisseurs testés avec un client HTTP factice).</li>
+</ol>
+<p>L'anti-prise de compte et le flux de liaison sont gérés par le noyau (<code>Linking\LinkingService</code>, <code>Flow\FlowService</code>) : un fournisseur doit seulement renvoyer un <code>Profile</code> fiable, en indiquant honnêtement si l'e-mail est vérifié.</p>
+<h2 id="12-changelog">12. Changelog</h2>
+<p>Voir <a href="../../CHANGELOG.md">CHANGELOG.md</a>. Version 1.0.0 : première version publique.</p>
+<h2 id="13-licence-et-support">13. Licence et support</h2>
+<p>Académique Free License 3.0 (AFL-3.0), voir <code>LICENSE.md</code>. Bibliothèques tierces : voir <code>THIRD_PARTY.md</code>. Signalez un problème sur <a href="https://github.com/Websource-fr/websourcesociallogin/issues">GitHub</a> ou via <a href="https://websource.fr">websource.fr</a>.</p></body></html>

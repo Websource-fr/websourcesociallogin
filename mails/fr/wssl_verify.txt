@@ -1,0 +1,6 @@
+Bonjour,
+
+Confirmez votre adresse e-mail sur {shop_name} pour terminer votre connexion avec votre compte social :
+{link}
+
+Ce lien est valable une heure et ne fonctionne que dans le navigateur où vous avez commencé. Si vous n'êtes pas à l'origine de cette demande, ignorez ce message : il ne se passera rien.
